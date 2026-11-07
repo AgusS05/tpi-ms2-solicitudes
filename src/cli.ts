@@ -13,16 +13,16 @@ export function main(args: string[]): void {
 
   if (cmd == 'registrar') {
     const dias = o('dias') ? Number(o('dias')) : undefined;
-    const r = g.registrarSolicitud(
-      o('legajo') as string,
-      o('nombre') as string,
-      o('email') as string,
-      o('tipo') as string,
-      o('descripcion') as string,
-      o('prioridad') as string,
-      dias as number,
-      o('responsable') as string,
-    );
+    const r = g.registrarSolicitud({
+      legajo: o('legajo') as string,
+      nombre: o('nombre') as string,
+      email: o('email') as string,
+      tipo: o('tipo') as string,
+      descripcion: o('descripcion') as string,
+      prioridad: o('prioridad'),
+      dias: dias,
+      responsable: o('responsable'),
+    });
     if (r === -1) process.exitCode = 1;
   } else if (cmd == 'estado') {
     if (!g.cambiarEstado(args[1], args[2])) process.exitCode = 1;

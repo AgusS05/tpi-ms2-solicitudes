@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { DatosNuevaSolicitud } from './dominio/datos-nueva-solicitud';
 
 // Gestor de solicitudes academicas.
 // Se encarga de todo: valida, calcula, guarda en archivo e imprime por consola.
@@ -28,34 +29,19 @@ export class GestorSolicitudes {
     );
   }
 
-  registrarSolicitud(
-    legajo: string,
-    nombre: string,
-    email: string,
-    tipo: string,
-    descripcion: string,
-    prioridad: string,
-    dias: number,
-    responsable: string,
-  ): any {
-    const mensajeDeError = this.validarDatosDeRegistro(
-      legajo,
-      nombre,
-      email,
-      tipo,
-      descripcion,
-      prioridad,
-      dias,
-    );
+  registrarSolicitud(datos: DatosNuevaSolicitud): any {
+    const mensajeDeError = this.validarDatosDeRegistro(datos);
     if (mensajeDeError) {
       console.log(mensajeDeError);
       return -1;
     }
 
-    const reglas = this.reglasDelTipo(tipo, prioridad, dias);
+    const reglas = this.reglasDelTipo(datos.tipo, datos.prioridad, datos.dias);
 
-    if (this.existeSolicitudActiva(legajo, tipo)) {
-      console.log('ERROR: ya existe una solicitud activa de ese tipo para el legajo ' + legajo);
+    if (this.existeSolicitudActiva(datos.legajo, datos.tipo)) {
+      console.log(
+        'ERROR: ya existe una solicitud activa de ese tipo para el legajo ' + datos.legajo,
+      );
       return -1;
     }
 
@@ -64,14 +50,14 @@ export class GestorSolicitudes {
     const hoy = this.hoy();
     const s = {
       id: id,
-      legajo: legajo,
-      nombre: nombre,
-      email: email,
-      tipo: tipo,
-      descripcion: descripcion.trim(),
+      legajo: datos.legajo,
+      nombre: datos.nombre,
+      email: datos.email,
+      tipo: datos.tipo,
+      descripcion: datos.descripcion.trim(),
       prioridad: reglas.prioridad,
       estado: 'PENDIENTE',
-      responsable: responsable ? responsable : reglas.area,
+      responsable: datos.responsable ? datos.responsable : reglas.area,
       fechaCreacion: hoy,
       fechaLimite: this.calcularFechaLimite(reglas.plazo),
       historial: [{ fecha: hoy, de: null, a: 'PENDIENTE' }],
@@ -93,15 +79,8 @@ export class GestorSolicitudes {
   }
 
   /** Devuelve el mensaje del primer error de validación, o null si los datos son válidos. */
-  validarDatosDeRegistro(
-    legajo: string,
-    nombre: string,
-    email: string,
-    tipo: string,
-    descripcion: string,
-    prioridad: string,
-    dias: number,
-  ): string | null {
+  validarDatosDeRegistro(datos: DatosNuevaSolicitud): string | null {
+    const { legajo, nombre, email, tipo, descripcion, prioridad, dias } = datos;
     if (!legajo || legajo.trim() == '') return 'ERROR: el legajo es obligatorio';
     if (!nombre || nombre.trim() == '') return 'ERROR: el nombre es obligatorio';
     if (!email || email.indexOf('@') < 1 || email.indexOf('.') < 0) return 'ERROR: email inválido';
@@ -129,10 +108,10 @@ export class GestorSolicitudes {
   /** Prioridad, plazo en días y área responsable según el tipo de solicitud. */
   reglasDelTipo(
     tipo: string,
-    prioridad: string,
-    dias: number,
+    prioridad?: string,
+    dias?: number,
   ): { prioridad: string; plazo: number; area: string } {
-    let p = prioridad;
+    let p = prioridad ?? '';
     let plazo = 0;
     let area = '';
     if (tipo == 'CERTIFICADO') {
