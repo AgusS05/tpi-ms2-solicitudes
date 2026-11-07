@@ -1,0 +1,28 @@
+diff --git a/src/dominio/reglas-por-tipo.ts b/src/dominio/reglas-por-tipo.ts
+index fabde7a..3af5ff9 100644
+--- a/src/dominio/reglas-por-tipo.ts
++++ b/src/dominio/reglas-por-tipo.ts
+@@ -31,6 +31,11 @@ export const REGLAS_POR_TIPO: Readonly<Record<TipoSolicitud, ReglaDeTipo>> = {
+     plazoDias: 10,
+     areaResponsable: 'Secretaría Académica',
+   },
++  CAMBIO_CARRERA: {
++    prioridadPorDefecto: Prioridad.MEDIA,
++    plazoDias: 20,
++    areaResponsable: 'Dirección de Carrera',
++  },
+   BAJA: {
+     prioridadPorDefecto: Prioridad.ALTA,
+     plazoDias: 3,
+diff --git a/src/dominio/tipo-solicitud.ts b/src/dominio/tipo-solicitud.ts
+index 6b9a47f..8a18625 100644
+--- a/src/dominio/tipo-solicitud.ts
++++ b/src/dominio/tipo-solicitud.ts
+@@ -5,6 +5,7 @@ export const TipoSolicitud = {
+   CAMBIO_COMISION: 'CAMBIO_COMISION',
+   REINCORPORACION: 'REINCORPORACION',
+   BAJA: 'BAJA',
++  CAMBIO_CARRERA: 'CAMBIO_CARRERA',
+ } as const;
+ 
+ export type TipoSolicitud = (typeof TipoSolicitud)[keyof typeof TipoSolicitud];
