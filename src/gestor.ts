@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { DatosNuevaSolicitud } from './dominio/datos-nueva-solicitud';
+import { DatosNuevaSolicitud, validarDatosNuevaSolicitud } from './dominio/datos-nueva-solicitud';
 import {
   ErrorDeValidacion,
   ReasignacionNoPermitida,
@@ -12,20 +12,18 @@ import { ESTADOS, Estado, esEstado, puedeTransicionar } from './dominio/estado';
 import { PRIORIDADES, Prioridad, esPrioridad } from './dominio/prioridad';
 import {
   DIAS_AVISO_VENCIMIENTO,
-  LARGO_MINIMO_DESCRIPCION,
   MS_POR_DIA,
-  PLAZO_MAXIMO_DIAS,
   PLAZO_MAXIMO_PRIORIDAD_ALTA,
-  PLAZO_MINIMO_DIAS,
 } from './dominio/reglas-de-negocio';
 import { REGLAS_POR_TIPO } from './dominio/reglas-por-tipo';
+import { RegistroDeSolicitud, Solicitud } from './dominio/solicitud';
 import { TIPOS, TipoSolicitud, esTipo } from './dominio/tipo-solicitud';
 
 // Gestor de solicitudes academicas.
 // Se encarga de todo: valida, calcula, guarda en archivo e imprime por consola.
 // OJO: funciona, no tocar mucho (version prototipo del primer cuatrimestre)
 export class GestorSolicitudes {
-  solicitudes: any[] = [];
+  solicitudes: Solicitud[] = [];
   contador = 0;
   ruta: string;
   modoDebug = false; // TODO: usar para logs
@@ -35,7 +33,7 @@ export class GestorSolicitudes {
     try {
       const raw = fs.readFileSync(this.ruta, 'utf8');
       const d = JSON.parse(raw);
-      this.solicitudes = d.solicitudes;
+      this.solicitudes = d.solicitudes.map((r: RegistroDeSolicitud) => Solicitud.desdeRegistro(r));
       this.contador = d.contador;
     } catch (e) {}
   }
@@ -44,36 +42,38 @@ export class GestorSolicitudes {
     fs.mkdirSync(path.dirname(this.ruta), { recursive: true });
     fs.writeFileSync(
       this.ruta,
-      JSON.stringify({ solicitudes: this.solicitudes, contador: this.contador }, null, 2),
+      JSON.stringify(
+        { solicitudes: this.solicitudes.map((s) => s.aRegistro()), contador: this.contador },
+        null,
+        2,
+      ),
     );
   }
 
   registrarSolicitud(datos: DatosNuevaSolicitud): string {
-    this.validarDatosDeRegistro(datos);
+    const nueva = validarDatosNuevaSolicitud(datos);
 
-    const reglas = this.reglasDelTipo(datos.tipo, datos.prioridad, datos.dias);
+    const reglas = this.reglasDelTipo(nueva.tipo, nueva.prioridad, nueva.plazoDias);
 
-    if (this.existeSolicitudActiva(datos.legajo, datos.tipo)) {
-      throw new SolicitudDuplicada(datos.legajo);
+    if (this.existeSolicitudActiva(nueva.estudiante.legajo, nueva.tipo)) {
+      throw new SolicitudDuplicada(nueva.estudiante.legajo);
     }
 
     this.contador++;
     const id = 'SOL-' + String(this.contador).padStart(4, '0');
     const hoy = this.hoy();
-    const s = {
+    const s = new Solicitud({
       id: id,
-      legajo: datos.legajo,
-      nombre: datos.nombre,
-      email: datos.email,
-      tipo: datos.tipo,
-      descripcion: datos.descripcion.trim(),
+      estudiante: nueva.estudiante,
+      tipo: nueva.tipo,
+      descripcion: nueva.descripcion,
       prioridad: reglas.prioridad,
       estado: Estado.PENDIENTE,
-      responsable: datos.responsable ? datos.responsable : reglas.area,
+      responsable: nueva.responsable ? nueva.responsable : reglas.area,
       fechaCreacion: hoy,
       fechaLimite: this.calcularFechaLimite(reglas.plazo),
       historial: [{ fecha: hoy, de: null, a: Estado.PENDIENTE }],
-    };
+    });
     this.solicitudes.push(s);
     this.guardar();
     console.log(
@@ -90,41 +90,13 @@ export class GestorSolicitudes {
     return id;
   }
 
-  /** Lanza ErrorDeValidacion con el primer problema que encuentre en los datos. */
-  validarDatosDeRegistro(datos: DatosNuevaSolicitud): void {
-    const { legajo, nombre, email, tipo, descripcion, prioridad, dias } = datos;
-    if (!legajo || legajo.trim() == '') throw new ErrorDeValidacion('el legajo es obligatorio');
-    if (!nombre || nombre.trim() == '') throw new ErrorDeValidacion('el nombre es obligatorio');
-    if (!email || email.indexOf('@') < 1 || email.indexOf('.') < 0) {
-      throw new ErrorDeValidacion('email inválido');
-    }
-    if (!esTipo(tipo)) throw new ErrorDeValidacion('tipo de solicitud inválido: ' + tipo);
-    if (!descripcion || descripcion.trim().length < LARGO_MINIMO_DESCRIPCION) {
-      throw new ErrorDeValidacion(
-        `la descripción debe tener al menos ${LARGO_MINIMO_DESCRIPCION} caracteres`,
-      );
-    }
-    if (prioridad && !esPrioridad(prioridad)) {
-      throw new ErrorDeValidacion('prioridad inválida: ' + prioridad);
-    }
-    if (
-      dias !== undefined &&
-      dias !== null &&
-      (isNaN(dias) || dias < PLAZO_MINIMO_DIAS || dias > PLAZO_MAXIMO_DIAS)
-    ) {
-      throw new ErrorDeValidacion(
-        `plazo inválido (${PLAZO_MINIMO_DIAS} a ${PLAZO_MAXIMO_DIAS} días)`,
-      );
-    }
-  }
-
   /** Prioridad, plazo en días y área responsable según el tipo de solicitud. */
   reglasDelTipo(
-    tipo: string,
-    prioridad?: string,
+    tipo: TipoSolicitud,
+    prioridad?: Prioridad,
     dias?: number,
-  ): { prioridad: string; plazo: number; area: string } {
-    const regla = REGLAS_POR_TIPO[tipo as TipoSolicitud];
+  ): { prioridad: Prioridad; plazo: number; area: string } {
+    const regla = REGLAS_POR_TIPO[tipo];
     const prioridadFinal = prioridad || regla.prioridadPorDefecto;
     let plazo = regla.plazoDias;
     if (!dias) {
@@ -138,10 +110,10 @@ export class GestorSolicitudes {
   }
 
   /** Una solicitud está activa mientras esté PENDIENTE o EN_REVISION. */
-  existeSolicitudActiva(legajo: string, tipo: string): boolean {
+  existeSolicitudActiva(legajo: string, tipo: TipoSolicitud): boolean {
     for (let i = 0; i < this.solicitudes.length; i++) {
       if (
-        this.solicitudes[i].legajo == legajo &&
+        this.solicitudes[i].estudiante.legajo == legajo &&
         this.solicitudes[i].tipo == tipo &&
         (this.solicitudes[i].estado == Estado.PENDIENTE ||
           this.solicitudes[i].estado == Estado.EN_REVISION)
@@ -152,7 +124,7 @@ export class GestorSolicitudes {
     return false;
   }
 
-  buscarPorId(id: string): any {
+  buscarPorId(id: string): Solicitud | null {
     for (let i = 0; i < this.solicitudes.length; i++) {
       if (this.solicitudes[i].id == id) return this.solicitudes[i];
     }
@@ -192,7 +164,7 @@ export class GestorSolicitudes {
     console.log('Solicitud ' + id + ' asignada a ' + s.responsable);
   }
 
-  buscar(estado?: string, tipo?: string, prioridad?: string, legajo?: string): any[] {
+  buscar(estado?: string, tipo?: string, prioridad?: string, legajo?: string): Solicitud[] {
     if (estado && !esEstado(estado)) throw new ErrorDeValidacion('estado inválido: ' + estado);
     if (tipo && !esTipo(tipo)) throw new ErrorDeValidacion('tipo de solicitud inválido: ' + tipo);
     if (prioridad && !esPrioridad(prioridad)) {
@@ -229,7 +201,7 @@ export class GestorSolicitudes {
     if (legajo) {
       const t = [];
       for (let i = 0; i < r.length; i++) {
-        if (r[i].legajo == legajo) {
+        if (r[i].estudiante.legajo == legajo) {
           t.push(r[i]);
         }
       }
@@ -246,7 +218,7 @@ export class GestorSolicitudes {
           ' | ' +
           x.estado +
           ' | ' +
-          x.nombre +
+          x.estudiante.nombre +
           ' | ' +
           x.responsable,
       );
@@ -259,7 +231,15 @@ export class GestorSolicitudes {
     const s = this.buscarPorId(id);
     if (s == null) throw new SolicitudInexistente(id);
     console.log(s.id + ' | ' + s.tipo + ' | ' + s.prioridad + ' | ' + s.estado);
-    console.log('Estudiante: ' + s.nombre + ' (' + s.legajo + ') <' + s.email + '>');
+    console.log(
+      'Estudiante: ' +
+        s.estudiante.nombre +
+        ' (' +
+        s.estudiante.legajo +
+        ') <' +
+        s.estudiante.email.valor +
+        '>',
+    );
     console.log('Descripción: ' + s.descripcion);
     console.log('Responsable: ' + s.responsable);
     console.log('Creada: ' + s.fechaCreacion + ' | Vence: ' + s.fechaLimite);
