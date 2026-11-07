@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { DatosNuevaSolicitud } from './dominio/datos-nueva-solicitud';
-import { ESTADOS, Estado, esEstado } from './dominio/estado';
+import { ESTADOS, Estado, esEstado, puedeTransicionar } from './dominio/estado';
 import { PRIORIDADES, Prioridad, esPrioridad } from './dominio/prioridad';
 import {
   DIAS_AVISO_VENCIMIENTO,
@@ -11,6 +11,7 @@ import {
   PLAZO_MAXIMO_PRIORIDAD_ALTA,
   PLAZO_MINIMO_DIAS,
 } from './dominio/reglas-de-negocio';
+import { REGLAS_POR_TIPO } from './dominio/reglas-por-tipo';
 import { TIPOS, TipoSolicitud, esTipo } from './dominio/tipo-solicitud';
 
 // Gestor de solicitudes academicas.
@@ -120,37 +121,17 @@ export class GestorSolicitudes {
     prioridad?: string,
     dias?: number,
   ): { prioridad: string; plazo: number; area: string } {
-    let p = prioridad ?? '';
-    let plazo = 0;
-    let area = '';
-    if (tipo == TipoSolicitud.CERTIFICADO) {
-      if (!p) p = Prioridad.MEDIA;
-      plazo = 5;
-      area = 'Alumnado';
-    } else if (tipo == TipoSolicitud.EQUIVALENCIA) {
-      if (!p) p = Prioridad.BAJA;
-      plazo = 15;
-      area = 'Secretaría Académica';
-    } else if (tipo == TipoSolicitud.CAMBIO_COMISION) {
-      if (!p) p = Prioridad.MEDIA;
-      plazo = 7;
-      area = 'Alumnado';
-    } else if (tipo == TipoSolicitud.REINCORPORACION) {
-      if (!p) p = Prioridad.ALTA;
-      plazo = 10;
-      area = 'Secretaría Académica';
-    } else if (tipo == TipoSolicitud.BAJA) {
-      if (!p) p = Prioridad.ALTA;
-      plazo = 3;
-      area = 'Dirección de Carrera';
-    }
+    const regla = REGLAS_POR_TIPO[tipo as TipoSolicitud];
+    const prioridadFinal = prioridad || regla.prioridadPorDefecto;
+    let plazo = regla.plazoDias;
     if (!dias) {
-      if (p == Prioridad.ALTA && plazo > PLAZO_MAXIMO_PRIORIDAD_ALTA)
-        plazo = PLAZO_MAXIMO_PRIORIDAD_ALTA;
+      if (prioridadFinal == Prioridad.ALTA) {
+        plazo = Math.min(plazo, PLAZO_MAXIMO_PRIORIDAD_ALTA);
+      }
     } else {
       plazo = dias;
     }
-    return { prioridad: p, plazo: plazo, area: area };
+    return { prioridad: prioridadFinal, plazo: plazo, area: regla.areaResponsable };
   }
 
   /** Una solicitud está activa mientras esté PENDIENTE o EN_REVISION. */
@@ -195,16 +176,7 @@ export class GestorSolicitudes {
       return false;
     }
     const a = s.estado;
-    let ok = false;
-    if (a == Estado.PENDIENTE && (nuevo == Estado.EN_REVISION || nuevo == Estado.RECHAZADA))
-      ok = true;
-    else if (
-      a == Estado.EN_REVISION &&
-      (nuevo == Estado.APROBADA || nuevo == Estado.RECHAZADA || nuevo == Estado.PENDIENTE)
-    )
-      ok = true;
-    else if (a == Estado.APROBADA && nuevo == Estado.CERRADA) ok = true;
-    else if (a == Estado.RECHAZADA && nuevo == Estado.CERRADA) ok = true;
+    const ok = puedeTransicionar(a, nuevo);
     if (!ok) {
       console.log('ERROR: transición no permitida: ' + a + ' -> ' + nuevo);
       return false;
