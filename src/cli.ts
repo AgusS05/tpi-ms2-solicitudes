@@ -1,7 +1,22 @@
 import { pathToFileURL } from 'url';
+import { ErrorDeDominio } from './dominio/errores';
 import { GestorSolicitudes } from './gestor';
 
+/**
+ * Punto de entrada del CLI. Es el borde del sistema: acá (y solo acá) se traducen los errores
+ * de dominio a un mensaje por consola y a un código de salida.
+ */
 export function main(args: string[]): void {
+  try {
+    ejecutarComando(args);
+  } catch (error) {
+    if (!(error instanceof ErrorDeDominio)) throw error;
+    console.log('ERROR: ' + error.message);
+    process.exitCode = 1;
+  }
+}
+
+function ejecutarComando(args: string[]): void {
   const cmd = args[0];
   const g = new GestorSolicitudes();
 
@@ -13,7 +28,7 @@ export function main(args: string[]): void {
 
   if (cmd == 'registrar') {
     const dias = o('dias') ? Number(o('dias')) : undefined;
-    const r = g.registrarSolicitud({
+    g.registrarSolicitud({
       legajo: o('legajo') as string,
       nombre: o('nombre') as string,
       email: o('email') as string,
@@ -23,16 +38,14 @@ export function main(args: string[]): void {
       dias: dias,
       responsable: o('responsable'),
     });
-    if (r === -1) process.exitCode = 1;
   } else if (cmd == 'estado') {
-    if (!g.cambiarEstado(args[1], args[2])) process.exitCode = 1;
+    g.cambiarEstado(args[1], args[2]);
   } else if (cmd == 'asignar') {
-    if (!g.asignarResponsable(args[1], args[2])) process.exitCode = 1;
+    g.asignarResponsable(args[1], args[2]);
   } else if (cmd == 'buscar') {
-    const r = g.buscar(o('estado'), o('tipo'), o('prioridad'), o('legajo'));
-    if (r === -1) process.exitCode = 1;
+    g.buscar(o('estado'), o('tipo'), o('prioridad'), o('legajo'));
   } else if (cmd == 'ver') {
-    if (!g.mostrar(args[1])) process.exitCode = 1;
+    g.mostrar(args[1]);
   } else if (cmd == 'reporte') {
     g.generarReporte();
   } else {

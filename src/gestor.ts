@@ -1,6 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { DatosNuevaSolicitud } from './dominio/datos-nueva-solicitud';
+import {
+  ErrorDeValidacion,
+  ReasignacionNoPermitida,
+  SolicitudDuplicada,
+  SolicitudInexistente,
+  TransicionNoPermitida,
+} from './dominio/errores';
 import { ESTADOS, Estado, esEstado, puedeTransicionar } from './dominio/estado';
 import { PRIORIDADES, Prioridad, esPrioridad } from './dominio/prioridad';
 import {
@@ -41,20 +48,13 @@ export class GestorSolicitudes {
     );
   }
 
-  registrarSolicitud(datos: DatosNuevaSolicitud): any {
-    const mensajeDeError = this.validarDatosDeRegistro(datos);
-    if (mensajeDeError) {
-      console.log(mensajeDeError);
-      return -1;
-    }
+  registrarSolicitud(datos: DatosNuevaSolicitud): string {
+    this.validarDatosDeRegistro(datos);
 
     const reglas = this.reglasDelTipo(datos.tipo, datos.prioridad, datos.dias);
 
     if (this.existeSolicitudActiva(datos.legajo, datos.tipo)) {
-      console.log(
-        'ERROR: ya existe una solicitud activa de ese tipo para el legajo ' + datos.legajo,
-      );
-      return -1;
+      throw new SolicitudDuplicada(datos.legajo);
     }
 
     this.contador++;
@@ -90,29 +90,32 @@ export class GestorSolicitudes {
     return id;
   }
 
-  /** Devuelve el mensaje del primer error de validación, o null si los datos son válidos. */
-  validarDatosDeRegistro(datos: DatosNuevaSolicitud): string | null {
+  /** Lanza ErrorDeValidacion con el primer problema que encuentre en los datos. */
+  validarDatosDeRegistro(datos: DatosNuevaSolicitud): void {
     const { legajo, nombre, email, tipo, descripcion, prioridad, dias } = datos;
-    if (!legajo || legajo.trim() == '') return 'ERROR: el legajo es obligatorio';
-    if (!nombre || nombre.trim() == '') return 'ERROR: el nombre es obligatorio';
-    if (!email || email.indexOf('@') < 1 || email.indexOf('.') < 0) return 'ERROR: email inválido';
-    if (!esTipo(tipo)) {
-      return 'ERROR: tipo de solicitud inválido: ' + tipo;
+    if (!legajo || legajo.trim() == '') throw new ErrorDeValidacion('el legajo es obligatorio');
+    if (!nombre || nombre.trim() == '') throw new ErrorDeValidacion('el nombre es obligatorio');
+    if (!email || email.indexOf('@') < 1 || email.indexOf('.') < 0) {
+      throw new ErrorDeValidacion('email inválido');
     }
+    if (!esTipo(tipo)) throw new ErrorDeValidacion('tipo de solicitud inválido: ' + tipo);
     if (!descripcion || descripcion.trim().length < LARGO_MINIMO_DESCRIPCION) {
-      return `ERROR: la descripción debe tener al menos ${LARGO_MINIMO_DESCRIPCION} caracteres`;
+      throw new ErrorDeValidacion(
+        `la descripción debe tener al menos ${LARGO_MINIMO_DESCRIPCION} caracteres`,
+      );
     }
     if (prioridad && !esPrioridad(prioridad)) {
-      return 'ERROR: prioridad inválida: ' + prioridad;
+      throw new ErrorDeValidacion('prioridad inválida: ' + prioridad);
     }
     if (
       dias !== undefined &&
       dias !== null &&
       (isNaN(dias) || dias < PLAZO_MINIMO_DIAS || dias > PLAZO_MAXIMO_DIAS)
     ) {
-      return `ERROR: plazo inválido (${PLAZO_MINIMO_DIAS} a ${PLAZO_MAXIMO_DIAS} días)`;
+      throw new ErrorDeValidacion(
+        `plazo inválido (${PLAZO_MINIMO_DIAS} a ${PLAZO_MAXIMO_DIAS} días)`,
+      );
     }
-    return null;
   }
 
   /** Prioridad, plazo en días y área responsable según el tipo de solicitud. */
@@ -165,61 +168,35 @@ export class GestorSolicitudes {
     return new Date(new Date().getTime() + plazoEnDias * MS_POR_DIA).toISOString().slice(0, 10);
   }
 
-  cambiarEstado(id: string, nuevo: string): boolean {
+  cambiarEstado(id: string, nuevo: string): void {
     const s = this.buscarPorId(id);
-    if (s == null) {
-      console.log('ERROR: no existe la solicitud ' + id);
-      return false;
-    }
-    if (!esEstado(nuevo)) {
-      console.log('ERROR: estado inválido: ' + nuevo);
-      return false;
-    }
-    const a = s.estado;
-    const ok = puedeTransicionar(a, nuevo);
-    if (!ok) {
-      console.log('ERROR: transición no permitida: ' + a + ' -> ' + nuevo);
-      return false;
-    }
+    if (s == null) throw new SolicitudInexistente(id);
+    if (!esEstado(nuevo)) throw new ErrorDeValidacion('estado inválido: ' + nuevo);
+    const anterior = s.estado;
+    if (!puedeTransicionar(anterior, nuevo)) throw new TransicionNoPermitida(anterior, nuevo);
     s.estado = nuevo;
-    s.historial.push({ fecha: this.hoy(), de: a, a: nuevo });
+    s.historial.push({ fecha: this.hoy(), de: anterior, a: nuevo });
     this.guardar();
-    console.log('Solicitud ' + id + ': ' + a + ' -> ' + nuevo);
-    return true;
+    console.log('Solicitud ' + id + ': ' + anterior + ' -> ' + nuevo);
   }
 
-  asignarResponsable(id: string, resp: string): boolean {
+  asignarResponsable(id: string, resp: string): void {
     const s = this.buscarPorId(id);
-    if (s == null) {
-      console.log('ERROR: no existe la solicitud ' + id);
-      return false;
-    }
-    if (!resp || resp.trim() == '') {
-      console.log('ERROR: el responsable es obligatorio');
-      return false;
-    }
-    if (s.estado == Estado.APROBADA || s.estado == Estado.RECHAZADA || s.estado == Estado.CERRADA) {
-      console.log('ERROR: no se puede reasignar una solicitud en estado ' + s.estado);
-      return false;
+    if (s == null) throw new SolicitudInexistente(id);
+    if (!resp || resp.trim() == '') throw new ErrorDeValidacion('el responsable es obligatorio');
+    if (s.estado != Estado.PENDIENTE && s.estado != Estado.EN_REVISION) {
+      throw new ReasignacionNoPermitida(s.estado);
     }
     s.responsable = resp.trim();
     this.guardar();
     console.log('Solicitud ' + id + ' asignada a ' + s.responsable);
-    return true;
   }
 
-  buscar(estado?: string, tipo?: string, prioridad?: string, legajo?: string): any {
-    if (estado && !esEstado(estado)) {
-      console.log('ERROR: estado inválido: ' + estado);
-      return -1;
-    }
-    if (tipo && !esTipo(tipo)) {
-      console.log('ERROR: tipo de solicitud inválido: ' + tipo);
-      return -1;
-    }
+  buscar(estado?: string, tipo?: string, prioridad?: string, legajo?: string): any[] {
+    if (estado && !esEstado(estado)) throw new ErrorDeValidacion('estado inválido: ' + estado);
+    if (tipo && !esTipo(tipo)) throw new ErrorDeValidacion('tipo de solicitud inválido: ' + tipo);
     if (prioridad && !esPrioridad(prioridad)) {
-      console.log('ERROR: prioridad inválida: ' + prioridad);
-      return -1;
+      throw new ErrorDeValidacion('prioridad inválida: ' + prioridad);
     }
     let r = this.solicitudes;
     if (estado) {
@@ -278,12 +255,9 @@ export class GestorSolicitudes {
     return r;
   }
 
-  mostrar(id: string): boolean {
+  mostrar(id: string): void {
     const s = this.buscarPorId(id);
-    if (s == null) {
-      console.log('ERROR: no existe la solicitud ' + id);
-      return false;
-    }
+    if (s == null) throw new SolicitudInexistente(id);
     console.log(s.id + ' | ' + s.tipo + ' | ' + s.prioridad + ' | ' + s.estado);
     console.log('Estudiante: ' + s.nombre + ' (' + s.legajo + ') <' + s.email + '>');
     console.log('Descripción: ' + s.descripcion);
@@ -294,7 +268,6 @@ export class GestorSolicitudes {
       const h = s.historial[i];
       console.log('  ' + h.fecha + ': ' + (h.de == null ? '(inicio)' : h.de) + ' -> ' + h.a);
     }
-    return true;
   }
 
   generarReporte() {
