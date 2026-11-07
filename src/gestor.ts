@@ -61,7 +61,7 @@ export class GestorSolicitudes {
 
     this.contador++;
     const id = 'SOL-' + String(this.contador).padStart(4, '0');
-    const hoy = new Date().toISOString().slice(0, 10);
+    const hoy = this.hoy();
     const s = {
       id: id,
       legajo: legajo,
@@ -178,6 +178,18 @@ export class GestorSolicitudes {
     return false;
   }
 
+  buscarPorId(id: string): any {
+    for (let i = 0; i < this.solicitudes.length; i++) {
+      if (this.solicitudes[i].id == id) return this.solicitudes[i];
+    }
+    return null;
+  }
+
+  /** Fecha actual en formato AAAA-MM-DD. */
+  hoy(): string {
+    return new Date().toISOString().slice(0, 10);
+  }
+
   calcularFechaLimite(plazoEnDias: number): string {
     return new Date(new Date().getTime() + plazoEnDias * 24 * 60 * 60 * 1000)
       .toISOString()
@@ -185,10 +197,7 @@ export class GestorSolicitudes {
   }
 
   cambiarEstado(id: string, nuevo: string): boolean {
-    let s: any = null;
-    for (let i = 0; i < this.solicitudes.length; i++) {
-      if (this.solicitudes[i].id == id) s = this.solicitudes[i];
-    }
+    const s = this.buscarPorId(id);
     if (s == null) {
       console.log('ERROR: no existe la solicitud ' + id);
       return false;
@@ -218,17 +227,14 @@ export class GestorSolicitudes {
       return false;
     }
     s.estado = nuevo;
-    s.historial.push({ fecha: new Date().toISOString().slice(0, 10), de: a, a: nuevo });
+    s.historial.push({ fecha: this.hoy(), de: a, a: nuevo });
     this.guardar();
     console.log('Solicitud ' + id + ': ' + a + ' -> ' + nuevo);
     return true;
   }
 
   asignarResponsable(id: string, resp: string): boolean {
-    let s: any = null;
-    for (let i = 0; i < this.solicitudes.length; i++) {
-      if (this.solicitudes[i].id == id) s = this.solicitudes[i];
-    }
+    const s = this.buscarPorId(id);
     if (s == null) {
       console.log('ERROR: no existe la solicitud ' + id);
       return false;
@@ -332,10 +338,7 @@ export class GestorSolicitudes {
   }
 
   mostrar(id: string): boolean {
-    let s: any = null;
-    for (let i = 0; i < this.solicitudes.length; i++) {
-      if (this.solicitudes[i].id == id) s = this.solicitudes[i];
-    }
+    const s = this.buscarPorId(id);
     if (s == null) {
       console.log('ERROR: no existe la solicitud ' + id);
       return false;
@@ -354,7 +357,7 @@ export class GestorSolicitudes {
   }
 
   generarReporte() {
-    const hoy = new Date().toISOString().slice(0, 10);
+    const hoy = this.hoy();
     console.log('=== REPORTE DE SOLICITUDES (' + hoy + ') ===');
     console.log('Total: ' + this.solicitudes.length);
 
