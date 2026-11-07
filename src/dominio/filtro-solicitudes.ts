@@ -12,6 +12,17 @@ export interface CriteriosDeBusqueda {
   legajo?: string;
 }
 
+/** Un criterio vacío se ignora; uno con valor debe pertenecer al conjunto válido. */
+function parsearOpcional<T extends string>(
+  valor: string | undefined,
+  esValido: (v: string) => v is T,
+  prefijoDeError: string,
+): T | undefined {
+  if (!valor) return undefined;
+  if (!esValido(valor)) throw new ErrorDeValidacion(prefijoDeError + valor);
+  return valor;
+}
+
 /**
  * Parameter Object + Specification: reemplaza los cuatro parámetros sueltos y los cuatro
  * bloques de filtro casi idénticos de la versión inicial. Los criterios se combinan con AND.
@@ -26,18 +37,10 @@ export class FiltroSolicitudes {
 
   /** Valida en el orden estado, tipo, prioridad. Un criterio vacío se ignora. */
   static desde(criterios: CriteriosDeBusqueda): FiltroSolicitudes {
-    const { estado, tipo, prioridad, legajo } = criterios;
-    if (estado && !esEstado(estado)) throw new ErrorDeValidacion('estado inválido: ' + estado);
-    if (tipo && !esTipo(tipo)) throw new ErrorDeValidacion('tipo de solicitud inválido: ' + tipo);
-    if (prioridad && !esPrioridad(prioridad)) {
-      throw new ErrorDeValidacion('prioridad inválida: ' + prioridad);
-    }
-    return new FiltroSolicitudes(
-      (estado || undefined) as Estado | undefined,
-      (tipo || undefined) as TipoSolicitud | undefined,
-      (prioridad || undefined) as Prioridad | undefined,
-      legajo || undefined,
-    );
+    const estado = parsearOpcional(criterios.estado, esEstado, 'estado inválido: ');
+    const tipo = parsearOpcional(criterios.tipo, esTipo, 'tipo de solicitud inválido: ');
+    const prioridad = parsearOpcional(criterios.prioridad, esPrioridad, 'prioridad inválida: ');
+    return new FiltroSolicitudes(estado, tipo, prioridad, criterios.legajo || undefined);
   }
 
   coincide(solicitud: Solicitud): boolean {

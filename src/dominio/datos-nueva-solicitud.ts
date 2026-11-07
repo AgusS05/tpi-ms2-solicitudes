@@ -34,31 +34,46 @@ export interface SolicitudValidada {
   responsable?: string;
 }
 
+function exigirTexto(valor: string, campo: string): void {
+  if (!valor || valor.trim() === '') throw new ErrorDeValidacion(`el ${campo} es obligatorio`);
+}
+
+function exigirDescripcion(descripcion: string): void {
+  if (!descripcion || descripcion.trim().length < LARGO_MINIMO_DESCRIPCION) {
+    throw new ErrorDeValidacion(
+      `la descripción debe tener al menos ${LARGO_MINIMO_DESCRIPCION} caracteres`,
+    );
+  }
+}
+
+function parsearPrioridad(prioridad: string | undefined): Prioridad | undefined {
+  if (!prioridad) return undefined;
+  if (!esPrioridad(prioridad)) throw new ErrorDeValidacion('prioridad inválida: ' + prioridad);
+  return prioridad;
+}
+
+function exigirPlazoValido(dias: number | undefined): void {
+  if (dias === undefined) return;
+  if (isNaN(dias) || dias < PLAZO_MINIMO_DIAS || dias > PLAZO_MAXIMO_DIAS) {
+    throw new ErrorDeValidacion(
+      `plazo inválido (${PLAZO_MINIMO_DIAS} a ${PLAZO_MAXIMO_DIAS} días)`,
+    );
+  }
+}
+
 /**
  * "Parsear en vez de validar": devuelve los datos tipados o lanza ErrorDeValidacion con el
  * primer problema encontrado (el orden de las comprobaciones es parte del comportamiento).
  */
 export function validarDatosNuevaSolicitud(datos: DatosNuevaSolicitud): SolicitudValidada {
   const { legajo, nombre, email, tipo, descripcion, prioridad, dias } = datos;
-  if (!legajo || legajo.trim() === '') throw new ErrorDeValidacion('el legajo es obligatorio');
-  if (!nombre || nombre.trim() === '') throw new ErrorDeValidacion('el nombre es obligatorio');
+  exigirTexto(legajo, 'legajo');
+  exigirTexto(nombre, 'nombre');
   const emailValido = Email.crear(email);
   if (!esTipo(tipo)) throw new ErrorDeValidacion('tipo de solicitud inválido: ' + tipo);
-  if (!descripcion || descripcion.trim().length < LARGO_MINIMO_DESCRIPCION) {
-    throw new ErrorDeValidacion(
-      `la descripción debe tener al menos ${LARGO_MINIMO_DESCRIPCION} caracteres`,
-    );
-  }
-  let prioridadValida: Prioridad | undefined;
-  if (prioridad) {
-    if (!esPrioridad(prioridad)) throw new ErrorDeValidacion('prioridad inválida: ' + prioridad);
-    prioridadValida = prioridad;
-  }
-  if (dias !== undefined && (isNaN(dias) || dias < PLAZO_MINIMO_DIAS || dias > PLAZO_MAXIMO_DIAS)) {
-    throw new ErrorDeValidacion(
-      `plazo inválido (${PLAZO_MINIMO_DIAS} a ${PLAZO_MAXIMO_DIAS} días)`,
-    );
-  }
+  exigirDescripcion(descripcion);
+  const prioridadValida = parsearPrioridad(prioridad);
+  exigirPlazoValido(dias);
   return {
     estudiante: new Estudiante(legajo, nombre, emailValido),
     tipo,
