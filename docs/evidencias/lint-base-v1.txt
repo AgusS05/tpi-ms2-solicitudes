@@ -1,0 +1,16 @@
+
+/home/claude/tpi-ms2-solicitudes/src/gestor.ts
+    8:16  warning  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+   20:14  error    'e' is defined but never used                   @typescript-eslint/no-unused-vars
+   20:17  error    Empty block statement                           no-empty
+   40:6   warning  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+   81:9   error    'tmp' is never reassigned. Use 'const' instead  prefer-const
+   81:9   error    'tmp' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  159:12  warning  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  199:12  warning  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  221:80  warning  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  306:12  warning  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+
+✖ 10 problems (4 errors, 6 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+

@@ -1,0 +1,72 @@
+$ pnpm start registrar --legajo L1001 --nombre "Ana Pérez" --email ana@mail.com --tipo CERTIFICADO --descripcion "Certificado de alumno regular"
+Solicitud SOL-0001 registrada (prioridad MEDIA, vence 2026-11-12, responsable: Alumnado)
+
+$ pnpm start registrar --legajo L1002 --nombre "Bruno Díaz" --email bruno@mail.com --tipo EQUIVALENCIA --descripcion "Equivalencia de Programación I" --prioridad ALTA --responsable "Prof. Gómez"
+Solicitud SOL-0002 registrada (prioridad ALTA, vence 2026-11-10, responsable: Prof. Gómez)
+
+$ pnpm start registrar --legajo L1003 --nombre "Carla Ruiz" --email carla@mail.com --tipo BAJA --descripcion "Baja por motivos laborales"
+Solicitud SOL-0003 registrada (prioridad ALTA, vence 2026-11-10, responsable: Dirección de Carrera)
+
+$ pnpm start registrar --legajo L1001 --nombre "Ana Pérez" --email ana@mail.com --tipo CERTIFICADO --descripcion "Segundo certificado igual"
+ERROR: ya existe una solicitud activa de ese tipo para el legajo L1001
+(código de salida: 1)
+
+$ pnpm start registrar --legajo L1004 --nombre "Diego Sosa" --email diego-sin-arroba --tipo CERTIFICADO --descripcion "Certificado para trámite"
+ERROR: email inválido
+(código de salida: 1)
+
+$ pnpm start estado SOL-0001 EN_REVISION
+Solicitud SOL-0001: PENDIENTE -> EN_REVISION
+
+$ pnpm start estado SOL-0001 CERRADA
+ERROR: transición no permitida: EN_REVISION -> CERRADA
+(código de salida: 1)
+
+$ pnpm start estado SOL-0001 APROBADA
+Solicitud SOL-0001: EN_REVISION -> APROBADA
+
+$ pnpm start asignar SOL-0002 "María López"
+Solicitud SOL-0002 asignada a María López
+
+$ pnpm start buscar --estado PENDIENTE
+SOL-0002 | EQUIVALENCIA | ALTA | PENDIENTE | Bruno Díaz | María López
+SOL-0003 | BAJA | ALTA | PENDIENTE | Carla Ruiz | Dirección de Carrera
+Total: 2
+
+$ pnpm start buscar --tipo CERTIFICADO --prioridad MEDIA
+SOL-0001 | CERTIFICADO | MEDIA | APROBADA | Ana Pérez | Alumnado
+Total: 1
+
+$ pnpm start ver SOL-0001
+SOL-0001 | CERTIFICADO | MEDIA | APROBADA
+Estudiante: Ana Pérez (L1001) <ana@mail.com>
+Descripción: Certificado de alumno regular
+Responsable: Alumnado
+Creada: 2026-11-07 | Vence: 2026-11-12
+Historial:
+  2026-11-07: (inicio) -> PENDIENTE
+  2026-11-07: PENDIENTE -> EN_REVISION
+  2026-11-07: EN_REVISION -> APROBADA
+
+$ pnpm start reporte
+=== REPORTE DE SOLICITUDES (2026-11-07) ===
+Total: 3
+Por estado:
+  PENDIENTE: 2
+  EN_REVISION: 0
+  APROBADA: 1
+  RECHAZADA: 0
+  CERRADA: 0
+Por tipo:
+  CERTIFICADO: 1
+  EQUIVALENCIA: 1
+  CAMBIO_COMISION: 0
+  REINCORPORACION: 0
+  BAJA: 1
+Por prioridad:
+  ALTA: 2
+  MEDIA: 1
+  BAJA: 0
+Vencidas: 0
+Próximas a vencer (2 días o menos): 0
+

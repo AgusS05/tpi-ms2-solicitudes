@@ -1,0 +1,147 @@
+{
+  "resumen": {
+    "etiqueta": "v1 - estado-inicial",
+    "directorio": "src",
+    "archivos": 2,
+    "lineasDeCodigo": 415,
+    "funciones": 13,
+    "complejidadMax": 43,
+    "complejidadPromedio": 11.4,
+    "lineasPorFuncionMax": 119,
+    "lineasPorFuncionPromedio": 31.3,
+    "parametrosMax": 8,
+    "funcionesSobreUmbralComplejidad": 6,
+    "funcionesSobreUmbralLineas": 5,
+    "funcionesSobreUmbralParametros": 1,
+    "archivoMasGrande": {
+      "archivo": "src/gestor.ts",
+      "lineas": 365
+    },
+    "violacionesCalidad": 126,
+    "violacionesPorRegla": {
+      "max-lines-per-function": 5,
+      "complexity": 6,
+      "sonarjs/cognitive-complexity": 5,
+      "eqeqeq": 75,
+      "no-magic-numbers": 22,
+      "@typescript-eslint/no-explicit-any": 6,
+      "@typescript-eslint/no-unused-vars": 2,
+      "no-empty": 1,
+      "max-params": 1,
+      "prefer-const": 1,
+      "sonarjs/no-duplicate-string": 1,
+      "max-lines": 1
+    },
+    "duplicacion": {
+      "porcentaje": 4.3,
+      "clones": 2,
+      "lineasDuplicadas": 19
+    }
+  },
+  "funciones": [
+    {
+      "complejidad": 13,
+      "lineas": 45,
+      "parametros": 1,
+      "archivo": "src/cli.ts",
+      "nombre": "main",
+      "linea": 4
+    },
+    {
+      "complejidad": 2,
+      "lineas": 5,
+      "parametros": 1,
+      "archivo": "src/cli.ts",
+      "nombre": "o",
+      "linea": 8
+    },
+    {
+      "complejidad": 1,
+      "lineas": 0,
+      "parametros": 0,
+      "archivo": "src/gestor.ts",
+      "nombre": "(anónima)",
+      "linea": 8
+    },
+    {
+      "complejidad": 1,
+      "lineas": 0,
+      "parametros": 0,
+      "archivo": "src/gestor.ts",
+      "nombre": "(anónima)",
+      "linea": 9
+    },
+    {
+      "complejidad": 1,
+      "lineas": 0,
+      "parametros": 0,
+      "archivo": "src/gestor.ts",
+      "nombre": "(anónima)",
+      "linea": 11
+    },
+    {
+      "complejidad": 3,
+      "lineas": 9,
+      "parametros": 0,
+      "archivo": "src/gestor.ts",
+      "nombre": "constructor",
+      "linea": 13
+    },
+    {
+      "complejidad": 1,
+      "lineas": 7,
+      "parametros": 0,
+      "archivo": "src/gestor.ts",
+      "nombre": "guardar",
+      "linea": 23
+    },
+    {
+      "complejidad": 43,
+      "lineas": 119,
+      "parametros": 8,
+      "archivo": "src/gestor.ts",
+      "nombre": "registrarSolicitud",
+      "linea": 31
+    },
+    {
+      "complejidad": 21,
+      "lineas": 39,
+      "parametros": 2,
+      "archivo": "src/gestor.ts",
+      "nombre": "cambiarEstado",
+      "linea": 158
+    },
+    {
+      "complejidad": 9,
+      "lineas": 22,
+      "parametros": 2,
+      "archivo": "src/gestor.ts",
+      "nombre": "asignarResponsable",
+      "linea": 198
+    },
+    {
+      "complejidad": 30,
+      "lineas": 83,
+      "parametros": 4,
+      "archivo": "src/gestor.ts",
+      "nombre": "buscar",
+      "linea": 221
+    },
+    {
+      "complejidad": 6,
+      "lineas": 21,
+      "parametros": 1,
+      "archivo": "src/gestor.ts",
+      "nombre": "mostrar",
+      "linea": 305
+    },
+    {
+      "complejidad": 17,
+      "lineas": 57,
+      "parametros": 0,
+      "archivo": "src/gestor.ts",
+      "nombre": "generarReporte",
+      "linea": 327
+    }
+  ]
+}

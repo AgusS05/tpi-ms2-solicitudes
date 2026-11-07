@@ -1,0 +1,134 @@
+
+/home/claude/tpi-ms2-solicitudes/src/cli.ts
+   4:8   warning  Function 'main' has too many lines (45). Maximum allowed is 30                       max-lines-per-function
+   4:8   warning  Function 'main' has a complexity of 13. Maximum allowed is 8                         complexity
+   4:17  warning  Refactor this function to reduce its Cognitive Complexity from 19 to the 12 allowed  sonarjs/cognitive-complexity
+  14:11  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  27:18  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  29:18  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  31:18  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  34:18  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  36:18  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  53:27  warning  No magic number: 2                                                                   no-magic-numbers
+
+/home/claude/tpi-ms2-solicitudes/src/gestor.ts
+    8:16  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+   20:14  error    'e' is defined but never used                                                        @typescript-eslint/no-unused-vars
+   20:17  warning  Empty block statement                                                                no-empty
+   27:88  warning  No magic number: 2                                                                   no-magic-numbers
+   31:3   warning  Method 'registrarSolicitud' has too many lines (119). Maximum allowed is 30          max-lines-per-function
+   31:3   warning  Method 'registrarSolicitud' has too many parameters (8). Maximum allowed is 4        max-params
+   31:3   warning  Refactor this function to reduce its Cognitive Complexity from 35 to the 12 allowed  sonarjs/cognitive-complexity
+   31:3   warning  Method 'registrarSolicitud' has a complexity of 43. Maximum allowed is 8             complexity
+   40:6   warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+   42:34  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+   46:34  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+   55:12  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+   56:12  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+   57:12  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+   58:12  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+   59:12  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+   64:53  warning  No magic number: 10                                                                  no-magic-numbers
+   68:32  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+   68:55  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+   68:79  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+   72:83  warning  No magic number: 60                                                                  no-magic-numbers
+   81:9   error    'tmp' is never reassigned. Use 'const' instead                                       prefer-const
+   81:9   error    'tmp' is assigned a value but never used                                             @typescript-eslint/no-unused-vars
+   82:14  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+   84:15  warning  No magic number: 5                                                                   no-magic-numbers
+   86:21  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+   88:15  warning  No magic number: 15                                                                  no-magic-numbers
+   90:21  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+   92:15  warning  No magic number: 7                                                                   no-magic-numbers
+   94:21  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+   96:15  warning  No magic number: 10                                                                  no-magic-numbers
+   98:21  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  100:15  warning  No magic number: 3                                                                   no-magic-numbers
+  105:13  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  105:34  warning  No magic number: 3                                                                   no-magic-numbers
+  105:45  warning  No magic number: 3                                                                   no-magic-numbers
+  113:36  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  114:34  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  115:37  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  115:82  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  123:56  warning  No magic number: 4                                                                   no-magic-numbers
+  124:51  warning  No magic number: 10                                                                  no-magic-numbers
+  125:57  warning  No magic number: 24                                                                  no-magic-numbers
+  125:62  warning  No magic number: 60                                                                  no-magic-numbers
+  125:67  warning  No magic number: 60                                                                  no-magic-numbers
+  125:72  warning  No magic number: 1000                                                                no-magic-numbers
+  127:17  warning  No magic number: 10                                                                  no-magic-numbers
+  158:3   warning  Method 'cambiarEstado' has too many lines (39). Maximum allowed is 30                max-lines-per-function
+  158:3   warning  Refactor this function to reduce its Cognitive Complexity from 15 to the 12 allowed  sonarjs/cognitive-complexity
+  158:3   warning  Method 'cambiarEstado' has a complexity of 21. Maximum allowed is 8                  complexity
+  159:12  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+  161:34  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  163:11  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  164:19  warning  Define a constant instead of duplicating this literal 3 times                        sonarjs/no-duplicate-string
+  168:13  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  169:13  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  170:13  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  171:13  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  172:13  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  179:11  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  179:36  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  179:62  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  181:9   warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  182:14  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  182:37  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  182:61  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  185:16  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  185:39  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  186:16  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  186:40  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  192:65  warning  No magic number: 10                                                                  no-magic-numbers
+  198:3   warning  Method 'asignarResponsable' has a complexity of 9. Maximum allowed is 8              complexity
+  199:12  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+  201:34  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  203:11  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  207:30  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  211:18  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  211:44  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  211:71  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  217:1   warning  File has too many lines (365). Maximum allowed is 200                                max-lines
+  221:3   warning  Method 'buscar' has too many lines (83). Maximum allowed is 30                       max-lines-per-function
+  221:3   warning  Refactor this function to reduce its Cognitive Complexity from 31 to the 12 allowed  sonarjs/cognitive-complexity
+  221:3   warning  Method 'buscar' has a complexity of 30. Maximum allowed is 8                         complexity
+  221:80  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+  224:14  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  225:14  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  226:14  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  227:14  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  228:14  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  235:12  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  236:12  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  237:12  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  238:12  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  239:12  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  244:32  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  244:55  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  244:79  warning  Expected '!==' and instead saw '!='                                                  eqeqeq
+  252:25  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  261:23  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  270:28  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  279:25  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  306:12  warning  Unexpected any. Specify a different type                                             @typescript-eslint/no-explicit-any
+  308:34  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  310:11  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  322:49  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  327:3   warning  Method 'generarReporte' has too many lines (57). Maximum allowed is 30               max-lines-per-function
+  327:3   warning  Refactor this function to reduce its Cognitive Complexity from 27 to the 12 allowed  sonarjs/cognitive-complexity
+  327:3   warning  Method 'generarReporte' has a complexity of 17. Maximum allowed is 8                 complexity
+  328:51  warning  No magic number: 10                                                                  no-magic-numbers
+  337:40  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  346:38  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  355:43  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  365:20  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  365:47  warning  Expected '===' and instead saw '=='                                                  eqeqeq
+  369:13  warning  No magic number: 86400000                                                            no-magic-numbers
+  375:27  warning  No magic number: 2                                                                   no-magic-numbers
+
+✖ 126 problems (3 errors, 123 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+
