@@ -4,10 +4,12 @@ import { Solicitud } from '../dominio/solicitud';
 /**
  * Implementación en memoria del puerto: sirve para pruebas rápidas y para demostrar que el
  * núcleo no depende de `fs` (LSP: es intercambiable con el repositorio JSON).
+ * Es además la base del repositorio JSON, que solo agrega cargar y volcar a disco
+ * (Template Method: `alGuardar` es el punto de extensión).
  */
 export class RepositorioEnMemoriaDeSolicitudes implements RepositorioDeSolicitudes {
-  private readonly solicitudes: Solicitud[] = [];
-  private contador = 0;
+  protected solicitudes: Solicitud[] = [];
+  protected contador = 0;
 
   todas(): readonly Solicitud[] {
     return this.solicitudes;
@@ -24,5 +26,9 @@ export class RepositorioEnMemoriaDeSolicitudes implements RepositorioDeSolicitud
 
   guardar(solicitud: Solicitud): void {
     if (!this.solicitudes.includes(solicitud)) this.solicitudes.push(solicitud);
+    this.alGuardar();
   }
+
+  /** Gancho para las subclases que necesitan persistir después de cada cambio. */
+  protected alGuardar(): void {}
 }

@@ -1,15 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { RepositorioDeSolicitudes } from '../aplicacion/puertos';
 import { BaseDeDatosCorrupta } from '../dominio/errores';
 import { RegistroDeSolicitud, Solicitud } from '../dominio/solicitud';
+import { RepositorioEnMemoriaDeSolicitudes } from './repositorio-en-memoria';
 
 /** Persiste las solicitudes en un archivo JSON. El formato es el mismo que el de la v1. */
-export class RepositorioJsonDeSolicitudes implements RepositorioDeSolicitudes {
-  private solicitudes: Solicitud[] = [];
-  private contador = 0;
-
+export class RepositorioJsonDeSolicitudes extends RepositorioEnMemoriaDeSolicitudes {
   constructor(private readonly ruta: string) {
+    super();
     if (!fs.existsSync(ruta)) return; // primer uso: todavía no hay datos
     try {
       const datos = JSON.parse(fs.readFileSync(ruta, 'utf8'));
@@ -22,29 +20,12 @@ export class RepositorioJsonDeSolicitudes implements RepositorioDeSolicitudes {
     }
   }
 
-  todas(): readonly Solicitud[] {
-    return this.solicitudes;
-  }
-
-  buscarPorId(id: string): Solicitud | undefined {
-    return this.solicitudes.find((s) => s.id === id);
-  }
-
-  siguienteNumero(): number {
-    this.contador++;
-    return this.contador;
-  }
-
-  guardar(solicitud: Solicitud): void {
-    if (!this.solicitudes.includes(solicitud)) this.solicitudes.push(solicitud);
+  protected override alGuardar(): void {
     fs.mkdirSync(path.dirname(this.ruta), { recursive: true });
-    fs.writeFileSync(
-      this.ruta,
-      JSON.stringify(
-        { solicitudes: this.solicitudes.map((s) => s.aRegistro()), contador: this.contador },
-        null,
-        2,
-      ),
-    );
+    const datos = {
+      solicitudes: this.solicitudes.map((s) => s.aRegistro()),
+      contador: this.contador,
+    };
+    fs.writeFileSync(this.ruta, JSON.stringify(datos, null, 2));
   }
 }
