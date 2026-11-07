@@ -1,6 +1,17 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { DatosNuevaSolicitud } from './dominio/datos-nueva-solicitud';
+import { ESTADOS, Estado, esEstado } from './dominio/estado';
+import { PRIORIDADES, Prioridad, esPrioridad } from './dominio/prioridad';
+import {
+  DIAS_AVISO_VENCIMIENTO,
+  LARGO_MINIMO_DESCRIPCION,
+  MS_POR_DIA,
+  PLAZO_MAXIMO_DIAS,
+  PLAZO_MAXIMO_PRIORIDAD_ALTA,
+  PLAZO_MINIMO_DIAS,
+} from './dominio/reglas-de-negocio';
+import { TIPOS, TipoSolicitud, esTipo } from './dominio/tipo-solicitud';
 
 // Gestor de solicitudes academicas.
 // Se encarga de todo: valida, calcula, guarda en archivo e imprime por consola.
@@ -56,11 +67,11 @@ export class GestorSolicitudes {
       tipo: datos.tipo,
       descripcion: datos.descripcion.trim(),
       prioridad: reglas.prioridad,
-      estado: 'PENDIENTE',
+      estado: Estado.PENDIENTE,
       responsable: datos.responsable ? datos.responsable : reglas.area,
       fechaCreacion: hoy,
       fechaLimite: this.calcularFechaLimite(reglas.plazo),
-      historial: [{ fecha: hoy, de: null, a: 'PENDIENTE' }],
+      historial: [{ fecha: hoy, de: null, a: Estado.PENDIENTE }],
     };
     this.solicitudes.push(s);
     this.guardar();
@@ -84,23 +95,21 @@ export class GestorSolicitudes {
     if (!legajo || legajo.trim() == '') return 'ERROR: el legajo es obligatorio';
     if (!nombre || nombre.trim() == '') return 'ERROR: el nombre es obligatorio';
     if (!email || email.indexOf('@') < 1 || email.indexOf('.') < 0) return 'ERROR: email inválido';
-    if (
-      tipo != 'CERTIFICADO' &&
-      tipo != 'EQUIVALENCIA' &&
-      tipo != 'CAMBIO_COMISION' &&
-      tipo != 'REINCORPORACION' &&
-      tipo != 'BAJA'
-    ) {
+    if (!esTipo(tipo)) {
       return 'ERROR: tipo de solicitud inválido: ' + tipo;
     }
-    if (!descripcion || descripcion.trim().length < 10) {
-      return 'ERROR: la descripción debe tener al menos 10 caracteres';
+    if (!descripcion || descripcion.trim().length < LARGO_MINIMO_DESCRIPCION) {
+      return `ERROR: la descripción debe tener al menos ${LARGO_MINIMO_DESCRIPCION} caracteres`;
     }
-    if (prioridad && prioridad != 'ALTA' && prioridad != 'MEDIA' && prioridad != 'BAJA') {
+    if (prioridad && !esPrioridad(prioridad)) {
       return 'ERROR: prioridad inválida: ' + prioridad;
     }
-    if (dias !== undefined && dias !== null && (isNaN(dias) || dias < 1 || dias > 60)) {
-      return 'ERROR: plazo inválido (1 a 60 días)';
+    if (
+      dias !== undefined &&
+      dias !== null &&
+      (isNaN(dias) || dias < PLAZO_MINIMO_DIAS || dias > PLAZO_MAXIMO_DIAS)
+    ) {
+      return `ERROR: plazo inválido (${PLAZO_MINIMO_DIAS} a ${PLAZO_MAXIMO_DIAS} días)`;
     }
     return null;
   }
@@ -114,29 +123,30 @@ export class GestorSolicitudes {
     let p = prioridad ?? '';
     let plazo = 0;
     let area = '';
-    if (tipo == 'CERTIFICADO') {
-      if (!p) p = 'MEDIA';
+    if (tipo == TipoSolicitud.CERTIFICADO) {
+      if (!p) p = Prioridad.MEDIA;
       plazo = 5;
       area = 'Alumnado';
-    } else if (tipo == 'EQUIVALENCIA') {
-      if (!p) p = 'BAJA';
+    } else if (tipo == TipoSolicitud.EQUIVALENCIA) {
+      if (!p) p = Prioridad.BAJA;
       plazo = 15;
       area = 'Secretaría Académica';
-    } else if (tipo == 'CAMBIO_COMISION') {
-      if (!p) p = 'MEDIA';
+    } else if (tipo == TipoSolicitud.CAMBIO_COMISION) {
+      if (!p) p = Prioridad.MEDIA;
       plazo = 7;
       area = 'Alumnado';
-    } else if (tipo == 'REINCORPORACION') {
-      if (!p) p = 'ALTA';
+    } else if (tipo == TipoSolicitud.REINCORPORACION) {
+      if (!p) p = Prioridad.ALTA;
       plazo = 10;
       area = 'Secretaría Académica';
-    } else if (tipo == 'BAJA') {
-      if (!p) p = 'ALTA';
+    } else if (tipo == TipoSolicitud.BAJA) {
+      if (!p) p = Prioridad.ALTA;
       plazo = 3;
       area = 'Dirección de Carrera';
     }
     if (!dias) {
-      if (p == 'ALTA' && plazo > 3) plazo = 3;
+      if (p == Prioridad.ALTA && plazo > PLAZO_MAXIMO_PRIORIDAD_ALTA)
+        plazo = PLAZO_MAXIMO_PRIORIDAD_ALTA;
     } else {
       plazo = dias;
     }
@@ -149,7 +159,8 @@ export class GestorSolicitudes {
       if (
         this.solicitudes[i].legajo == legajo &&
         this.solicitudes[i].tipo == tipo &&
-        (this.solicitudes[i].estado == 'PENDIENTE' || this.solicitudes[i].estado == 'EN_REVISION')
+        (this.solicitudes[i].estado == Estado.PENDIENTE ||
+          this.solicitudes[i].estado == Estado.EN_REVISION)
       ) {
         return true;
       }
@@ -170,9 +181,7 @@ export class GestorSolicitudes {
   }
 
   calcularFechaLimite(plazoEnDias: number): string {
-    return new Date(new Date().getTime() + plazoEnDias * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .slice(0, 10);
+    return new Date(new Date().getTime() + plazoEnDias * MS_POR_DIA).toISOString().slice(0, 10);
   }
 
   cambiarEstado(id: string, nuevo: string): boolean {
@@ -181,26 +190,21 @@ export class GestorSolicitudes {
       console.log('ERROR: no existe la solicitud ' + id);
       return false;
     }
-    if (
-      nuevo != 'PENDIENTE' &&
-      nuevo != 'EN_REVISION' &&
-      nuevo != 'APROBADA' &&
-      nuevo != 'RECHAZADA' &&
-      nuevo != 'CERRADA'
-    ) {
+    if (!esEstado(nuevo)) {
       console.log('ERROR: estado inválido: ' + nuevo);
       return false;
     }
     const a = s.estado;
     let ok = false;
-    if (a == 'PENDIENTE' && (nuevo == 'EN_REVISION' || nuevo == 'RECHAZADA')) ok = true;
+    if (a == Estado.PENDIENTE && (nuevo == Estado.EN_REVISION || nuevo == Estado.RECHAZADA))
+      ok = true;
     else if (
-      a == 'EN_REVISION' &&
-      (nuevo == 'APROBADA' || nuevo == 'RECHAZADA' || nuevo == 'PENDIENTE')
+      a == Estado.EN_REVISION &&
+      (nuevo == Estado.APROBADA || nuevo == Estado.RECHAZADA || nuevo == Estado.PENDIENTE)
     )
       ok = true;
-    else if (a == 'APROBADA' && nuevo == 'CERRADA') ok = true;
-    else if (a == 'RECHAZADA' && nuevo == 'CERRADA') ok = true;
+    else if (a == Estado.APROBADA && nuevo == Estado.CERRADA) ok = true;
+    else if (a == Estado.RECHAZADA && nuevo == Estado.CERRADA) ok = true;
     if (!ok) {
       console.log('ERROR: transición no permitida: ' + a + ' -> ' + nuevo);
       return false;
@@ -222,7 +226,7 @@ export class GestorSolicitudes {
       console.log('ERROR: el responsable es obligatorio');
       return false;
     }
-    if (s.estado == 'APROBADA' || s.estado == 'RECHAZADA' || s.estado == 'CERRADA') {
+    if (s.estado == Estado.APROBADA || s.estado == Estado.RECHAZADA || s.estado == Estado.CERRADA) {
       console.log('ERROR: no se puede reasignar una solicitud en estado ' + s.estado);
       return false;
     }
@@ -233,29 +237,15 @@ export class GestorSolicitudes {
   }
 
   buscar(estado?: string, tipo?: string, prioridad?: string, legajo?: string): any {
-    if (
-      estado &&
-      estado != 'PENDIENTE' &&
-      estado != 'EN_REVISION' &&
-      estado != 'APROBADA' &&
-      estado != 'RECHAZADA' &&
-      estado != 'CERRADA'
-    ) {
+    if (estado && !esEstado(estado)) {
       console.log('ERROR: estado inválido: ' + estado);
       return -1;
     }
-    if (
-      tipo &&
-      tipo != 'CERTIFICADO' &&
-      tipo != 'EQUIVALENCIA' &&
-      tipo != 'CAMBIO_COMISION' &&
-      tipo != 'REINCORPORACION' &&
-      tipo != 'BAJA'
-    ) {
+    if (tipo && !esTipo(tipo)) {
       console.log('ERROR: tipo de solicitud inválido: ' + tipo);
       return -1;
     }
-    if (prioridad && prioridad != 'ALTA' && prioridad != 'MEDIA' && prioridad != 'BAJA') {
+    if (prioridad && !esPrioridad(prioridad)) {
       console.log('ERROR: prioridad inválida: ' + prioridad);
       return -1;
     }
@@ -340,7 +330,7 @@ export class GestorSolicitudes {
     console.log('=== REPORTE DE SOLICITUDES (' + hoy + ') ===');
     console.log('Total: ' + this.solicitudes.length);
 
-    const estados = ['PENDIENTE', 'EN_REVISION', 'APROBADA', 'RECHAZADA', 'CERRADA'];
+    const estados = ESTADOS;
     console.log('Por estado:');
     for (let i = 0; i < estados.length; i++) {
       let c = 0;
@@ -349,7 +339,7 @@ export class GestorSolicitudes {
       }
       console.log('  ' + estados[i] + ': ' + c);
     }
-    const tipos = ['CERTIFICADO', 'EQUIVALENCIA', 'CAMBIO_COMISION', 'REINCORPORACION', 'BAJA'];
+    const tipos = TIPOS;
     console.log('Por tipo:');
     for (let i = 0; i < tipos.length; i++) {
       let c = 0;
@@ -358,7 +348,7 @@ export class GestorSolicitudes {
       }
       console.log('  ' + tipos[i] + ': ' + c);
     }
-    const prios = ['ALTA', 'MEDIA', 'BAJA'];
+    const prios = PRIORIDADES;
     console.log('Por prioridad:');
     for (let i = 0; i < prios.length; i++) {
       let c = 0;
@@ -373,17 +363,17 @@ export class GestorSolicitudes {
     const prox: string[] = [];
     for (let i = 0; i < this.solicitudes.length; i++) {
       const s = this.solicitudes[i];
-      if (s.estado == 'PENDIENTE' || s.estado == 'EN_REVISION') {
+      if (s.estado == Estado.PENDIENTE || s.estado == Estado.EN_REVISION) {
         const dif = Math.round(
           (new Date(s.fechaLimite + 'T00:00:00Z').getTime() -
             new Date(hoy + 'T00:00:00Z').getTime()) /
-            86400000,
+            MS_POR_DIA,
         );
         if (dif < 0) {
           venc.push(
             '  ' + s.id + ' vencida hace ' + -dif + ' días (responsable: ' + s.responsable + ')',
           );
-        } else if (dif <= 2) {
+        } else if (dif <= DIAS_AVISO_VENCIMIENTO) {
           prox.push(
             '  ' + s.id + ' vence en ' + dif + ' días (responsable: ' + s.responsable + ')',
           );
@@ -392,7 +382,7 @@ export class GestorSolicitudes {
     }
     console.log('Vencidas: ' + venc.length);
     for (let i = 0; i < venc.length; i++) console.log(venc[i]);
-    console.log('Próximas a vencer (2 días o menos): ' + prox.length);
+    console.log(`Próximas a vencer (${DIAS_AVISO_VENCIMIENTO} días o menos): ` + prox.length);
     for (let i = 0; i < prox.length; i++) console.log(prox[i]);
   }
 }
