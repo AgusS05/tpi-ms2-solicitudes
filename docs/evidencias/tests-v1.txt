@@ -1,0 +1,118 @@
+
+ RUN  v5.1.0 /home/claude/tpi-ms2-solicitudes
+
+ ✓ tests/comportamiento.test.ts > registrar solicitud > caso feliz y reglas por tipo > registra una solicitud válida y muestra prioridad, vencimiento y responsable por defecto 5ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > caso feliz y reglas por tipo > el tipo CERTIFICADO define prioridad MEDIA, vencimiento 2026-11-12 y responsable Alumnado 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > caso feliz y reglas por tipo > el tipo EQUIVALENCIA define prioridad BAJA, vencimiento 2026-11-22 y responsable Secretaría Académica 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > caso feliz y reglas por tipo > el tipo CAMBIO_COMISION define prioridad MEDIA, vencimiento 2026-11-14 y responsable Alumnado 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > caso feliz y reglas por tipo > el tipo REINCORPORACION define prioridad ALTA, vencimiento 2026-11-10 y responsable Secretaría Académica 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > caso feliz y reglas por tipo > el tipo BAJA define prioridad ALTA, vencimiento 2026-11-10 y responsable Dirección de Carrera 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > caso feliz y reglas por tipo > con prioridad ALTA explícita acota el plazo a 3 días aunque el tipo tenga más 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > caso feliz y reglas por tipo > con una prioridad explícita menor conserva el plazo propio del tipo 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > caso feliz y reglas por tipo > un plazo explícito (--dias) prevalece sobre las reglas del tipo y de la prioridad 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > caso feliz y reglas por tipo > un responsable explícito reemplaza al área por defecto 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > caso feliz y reglas por tipo > asigna identificadores correlativos SOL-0001, SOL-0002, ... 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {"legajo":""} informa "ERROR: el legajo es obligatorio" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {"legajo":"   "} informa "ERROR: el legajo es obligatorio" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {} informa "ERROR: el legajo es obligatorio" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {"nombre":""} informa "ERROR: el nombre es obligatorio" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {} informa "ERROR: el nombre es obligatorio" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {"email":"sin-arroba"} informa "ERROR: email inválido" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {"email":"@mail.com"} informa "ERROR: email inválido" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {"email":"ana@mail"} informa "ERROR: email inválido" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {} informa "ERROR: email inválido" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {"tipo":"INVENTADO"} informa "ERROR: tipo de solicitud inválido: INVENTADO" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {"descripcion":"123456789"} informa "ERROR: la descripción debe tener al menos 10 caracteres" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {"descripcion":"   corta   "} informa "ERROR: la descripción debe tener al menos 10 caracteres" 2ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {} informa "ERROR: la descripción debe tener al menos 10 caracteres" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {"prioridad":"URGENTE"} informa "ERROR: prioridad inválida: URGENTE" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {"dias":"0"} informa "ERROR: plazo inválido (1 a 60 días)" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {"dias":"61"} informa "ERROR: plazo inválido (1 a 60 días)" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {"dias":"-5"} informa "ERROR: plazo inválido (1 a 60 días)" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > con {"dias":"abc"} informa "ERROR: plazo inválido (1 a 60 días)" 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > acepta los valores límite: descripción de 10 caracteres y plazos de 1 y 60 días 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > acepta un email mínimo válido (a@b.c) 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > validaciones (mensaje, código de salida 1 y nada persistido) > informa primero el primer error en el orden: legajo, nombre, email, tipo, descripción, prioridad, plazo 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > solicitudes activas duplicadas > rechaza una segunda solicitud activa del mismo tipo para el mismo legajo 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > solicitudes activas duplicadas > también la rechaza si la primera está EN_REVISION 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > solicitudes activas duplicadas > permite una nueva solicitud del mismo tipo si la anterior está APROBADA 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > solicitudes activas duplicadas > permite una nueva solicitud del mismo tipo si la anterior está RECHAZADA 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > solicitudes activas duplicadas > permite una nueva solicitud del mismo tipo si la anterior está CERRADA 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > solicitudes activas duplicadas > permite solicitudes de distinto tipo para el mismo legajo 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > solicitudes activas duplicadas > permite el mismo tipo para otro legajo 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > persistencia > guarda en el archivo el contador y la solicitud con su historial inicial 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > persistencia > conserva los datos entre ejecuciones distintas 1ms
+ ✓ tests/comportamiento.test.ts > registrar solicitud > persistencia > DEFECTO CONOCIDO (S8): un archivo de datos corrupto se ignora en silencio y se sobrescribe 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > cambia el estado e informa la transición 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > informa error si la solicitud no existe 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > informa error si el nombre del estado no existe 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > verifica primero que la solicitud exista y después que el estado sea válido 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > permite la transición PENDIENTE -> EN_REVISION 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > permite la transición PENDIENTE -> RECHAZADA 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > permite la transición EN_REVISION -> APROBADA 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > permite la transición EN_REVISION -> RECHAZADA 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > permite la transición EN_REVISION -> PENDIENTE 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > permite la transición APROBADA -> CERRADA 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > permite la transición RECHAZADA -> CERRADA 2ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición PENDIENTE -> PENDIENTE y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición PENDIENTE -> APROBADA y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición PENDIENTE -> CERRADA y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición EN_REVISION -> EN_REVISION y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición EN_REVISION -> CERRADA y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición APROBADA -> PENDIENTE y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición APROBADA -> EN_REVISION y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición APROBADA -> APROBADA y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición APROBADA -> RECHAZADA y deja el estado sin cambios 2ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición RECHAZADA -> PENDIENTE y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición RECHAZADA -> EN_REVISION y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición RECHAZADA -> APROBADA y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición RECHAZADA -> RECHAZADA y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición CERRADA -> PENDIENTE y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición CERRADA -> EN_REVISION y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición CERRADA -> APROBADA y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición CERRADA -> RECHAZADA y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > rechaza la transición CERRADA -> CERRADA y deja el estado sin cambios 1ms
+ ✓ tests/comportamiento.test.ts > cambiar estado > cubre las 25 combinaciones posibles de estado actual y nuevo estado 0ms
+ ✓ tests/comportamiento.test.ts > asignar responsable > asigna el responsable e informa 1ms
+ ✓ tests/comportamiento.test.ts > asignar responsable > elimina los espacios sobrantes del nombre 1ms
+ ✓ tests/comportamiento.test.ts > asignar responsable > informa error si la solicitud no existe 1ms
+ ✓ tests/comportamiento.test.ts > asignar responsable > informa error si el responsable es vacío ("") 1ms
+ ✓ tests/comportamiento.test.ts > asignar responsable > informa error si el responsable es vacío ("   ") 1ms
+ ✓ tests/comportamiento.test.ts > asignar responsable > informa error si falta el responsable 1ms
+ ✓ tests/comportamiento.test.ts > asignar responsable > verifica primero que la solicitud exista y después el responsable 1ms
+ ✓ tests/comportamiento.test.ts > asignar responsable > permite reasignar una solicitud PENDIENTE 1ms
+ ✓ tests/comportamiento.test.ts > asignar responsable > permite reasignar una solicitud EN_REVISION 1ms
+ ✓ tests/comportamiento.test.ts > asignar responsable > no permite reasignar una solicitud APROBADA 1ms
+ ✓ tests/comportamiento.test.ts > asignar responsable > no permite reasignar una solicitud RECHAZADA 1ms
+ ✓ tests/comportamiento.test.ts > asignar responsable > no permite reasignar una solicitud CERRADA 1ms
+ ✓ tests/comportamiento.test.ts > buscar / filtrar > sin filtros lista todas las solicitudes en orden de registro con su total 2ms
+ ✓ tests/comportamiento.test.ts > buscar / filtrar > con la base vacía informa Total: 0 1ms
+ ✓ tests/comportamiento.test.ts > buscar / filtrar > filtra por ["--estado","PENDIENTE"] 2ms
+ ✓ tests/comportamiento.test.ts > buscar / filtrar > filtra por ["--estado","EN_REVISION"] 2ms
+ ✓ tests/comportamiento.test.ts > buscar / filtrar > filtra por ["--estado","CERRADA"] 2ms
+ ✓ tests/comportamiento.test.ts > buscar / filtrar > filtra por ["--tipo","CERTIFICADO"] 1ms
+ ✓ tests/comportamiento.test.ts > buscar / filtrar > filtra por ["--prioridad","MEDIA"] 2ms
+ ✓ tests/comportamiento.test.ts > buscar / filtrar > filtra por ["--prioridad","ALTA"] 2ms
+ ✓ tests/comportamiento.test.ts > buscar / filtrar > filtra por ["--legajo","L1"] 6ms
+ ✓ tests/comportamiento.test.ts > buscar / filtrar > filtra por ["--legajo","L999"] 2ms
+ ✓ tests/comportamiento.test.ts > buscar / filtrar > combina varios filtros con AND 2ms
+ ✓ tests/comportamiento.test.ts > buscar / filtrar > informa error con filtros inválidos ["--estado","FINALIZADA"] 2ms
+ ✓ tests/comportamiento.test.ts > buscar / filtrar > informa error con filtros inválidos ["--tipo","INVENTADO"] 1ms
+ ✓ tests/comportamiento.test.ts > buscar / filtrar > informa error con filtros inválidos ["--prioridad","URGENTE"] 2ms
+ ✓ tests/comportamiento.test.ts > buscar / filtrar > refleja los cambios de responsable en el listado 2ms
+ ✓ tests/comportamiento.test.ts > ver detalle > muestra los datos, el vencimiento y el historial inicial 1ms
+ ✓ tests/comportamiento.test.ts > ver detalle > registra en el historial cada cambio de estado con su fecha 1ms
+ ✓ tests/comportamiento.test.ts > ver detalle > informa error si la solicitud no existe 1ms
+ ✓ tests/comportamiento.test.ts > reporte > con la base vacía informa todo en cero 1ms
+ ✓ tests/comportamiento.test.ts > reporte > totaliza por estado, tipo y prioridad y detalla vencidas y próximas a vencer 4ms
+ ✓ tests/comportamiento.test.ts > reporte > no considera vencidas ni próximas las solicitudes que ya no están abiertas 3ms
+ ✓ tests/comportamiento.test.ts > reporte > el día del vencimiento figura como "vence en 0 días" y no como vencida 1ms
+ ✓ tests/comportamiento.test.ts > reporte > el límite de "próximas a vencer" es de 2 días inclusive 1ms
+ ✓ tests/comportamiento.test.ts > uso del programa > sin comando muestra la ayuda y termina con código 1 1ms
+ ✓ tests/comportamiento.test.ts > uso del programa > con un comando desconocido muestra la ayuda y termina con código 1 1ms
+
+ Test Files  1 passed (1)
+      Tests  109 passed (109)
+   Start at  13:52:23
+   Duration  251ms (tests 82%, import 11%, transform 5%, worker 2%)
+
