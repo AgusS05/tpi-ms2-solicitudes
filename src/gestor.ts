@@ -1,14 +1,12 @@
 import { RepositorioDeSolicitudes, Reloj } from './aplicacion/puertos';
 import { DatosNuevaSolicitud, validarDatosNuevaSolicitud } from './dominio/datos-nueva-solicitud';
 import { ErrorDeValidacion, SolicitudDuplicada, SolicitudInexistente } from './dominio/errores';
-import { ESTADOS, Estado, esEstado } from './dominio/estado';
+import { Estado, esEstado } from './dominio/estado';
 import { CriteriosDeBusqueda, FiltroSolicitudes } from './dominio/filtro-solicitudes';
 import { aFechaISO, sumarDias } from './dominio/fecha';
-import { PRIORIDADES } from './dominio/prioridad';
-import { DIAS_AVISO_VENCIMIENTO } from './dominio/reglas-de-negocio';
 import { resolverCondiciones } from './dominio/reglas-por-tipo';
-import { RegistroDeSolicitud, Solicitud } from './dominio/solicitud';
-import { TIPOS, TipoSolicitud } from './dominio/tipo-solicitud';
+import { Solicitud } from './dominio/solicitud';
+import { TipoSolicitud } from './dominio/tipo-solicitud';
 
 // Gestor de solicitudes academicas.
 // Se encarga de todo: valida, calcula e imprime por consola. Persistencia y reloj se inyectan.
@@ -137,57 +135,5 @@ export class GestorSolicitudes {
       const h = s.historial[i];
       console.log('  ' + h.fecha + ': ' + (h.de == null ? '(inicio)' : h.de) + ' -> ' + h.a);
     }
-  }
-
-  /** Imprime cuántas solicitudes hay en cada categoría (incluye las que tienen cero). */
-  imprimirConteo<T extends string>(categorias: readonly T[], clasificar: (s: Solicitud) => T) {
-    for (const categoria of categorias) {
-      const cantidad = this.repositorio.todas().filter((s) => clasificar(s) === categoria).length;
-      console.log('  ' + categoria + ': ' + cantidad);
-    }
-  }
-
-  generarReporte() {
-    const hoy = this.hoy();
-    console.log('=== REPORTE DE SOLICITUDES (' + hoy + ') ===');
-    console.log('Total: ' + this.repositorio.todas().length);
-
-    console.log('Por estado:');
-    this.imprimirConteo(ESTADOS, (s) => s.estado);
-    console.log('Por tipo:');
-    this.imprimirConteo(TIPOS, (s) => s.tipo);
-    console.log('Por prioridad:');
-    this.imprimirConteo(PRIORIDADES, (s) => s.prioridad);
-
-    // vencimientos de las solicitudes que siguen abiertas
-    const venc: string[] = [];
-    const prox: string[] = [];
-    for (const s of this.repositorio.todas()) {
-      if (s.estaVencida(hoy)) {
-        venc.push(
-          '  ' +
-            s.id +
-            ' vencida hace ' +
-            -s.diasParaVencer(hoy) +
-            ' días (responsable: ' +
-            s.responsable +
-            ')',
-        );
-      } else if (s.estaPorVencer(hoy)) {
-        prox.push(
-          '  ' +
-            s.id +
-            ' vence en ' +
-            s.diasParaVencer(hoy) +
-            ' días (responsable: ' +
-            s.responsable +
-            ')',
-        );
-      }
-    }
-    console.log('Vencidas: ' + venc.length);
-    for (let i = 0; i < venc.length; i++) console.log(venc[i]);
-    console.log(`Próximas a vencer (${DIAS_AVISO_VENCIMIENTO} días o menos): ` + prox.length);
-    for (let i = 0; i < prox.length; i++) console.log(prox[i]);
   }
 }

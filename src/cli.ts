@@ -1,8 +1,10 @@
 import { pathToFileURL } from 'url';
 import { ErrorDeDominio } from './dominio/errores';
+import { ServicioDeReportes } from './aplicacion/servicio-reportes';
 import { GestorSolicitudes } from './gestor';
 import { RelojDelSistema } from './infraestructura/reloj-del-sistema';
 import { RepositorioJsonDeSolicitudes } from './infraestructura/repositorio-json';
+import { lineasDeReporte } from './presentacion/formato';
 
 /**
  * Punto de entrada del CLI. Es el borde del sistema: acá (y solo acá) se traducen los errores
@@ -22,10 +24,9 @@ function ejecutarComando(args: string[]): void {
   const cmd = args[0];
   // Raíz de composición: acá se eligen las implementaciones concretas (único lugar que las conoce).
   const rutaDeDatos = process.env.SOLICITUDES_DB || './data/solicitudes.json';
-  const g = new GestorSolicitudes(
-    new RepositorioJsonDeSolicitudes(rutaDeDatos),
-    new RelojDelSistema(),
-  );
+  const repositorio = new RepositorioJsonDeSolicitudes(rutaDeDatos);
+  const reloj = new RelojDelSistema();
+  const g = new GestorSolicitudes(repositorio, reloj);
 
   function o(n: string): string | undefined {
     const i = args.indexOf('--' + n);
@@ -59,7 +60,8 @@ function ejecutarComando(args: string[]): void {
   } else if (cmd == 'ver') {
     g.mostrar(args[1]);
   } else if (cmd == 'reporte') {
-    g.generarReporte();
+    const reporte = new ServicioDeReportes(repositorio, reloj).generar();
+    lineasDeReporte(reporte).forEach((linea) => console.log(linea));
   } else {
     console.log('Uso: pnpm start <comando> [opciones]');
     console.log(
