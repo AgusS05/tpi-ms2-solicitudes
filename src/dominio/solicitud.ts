@@ -42,6 +42,11 @@ export interface RegistroDeSolicitud {
   historial: CambioDeEstado[];
 }
 
+/** Identificador legible a partir del número correlativo: 1 -> SOL-0001. */
+export function identificadorDe(numero: number): string {
+  return 'SOL-' + String(numero).padStart(4, '0');
+}
+
 /**
  * Entidad Solicitud. Conoce y protege sus propias reglas: el estado y el responsable solo
  * cambian a través de sus métodos (antes cualquiera podía modificar el objeto `any`).
