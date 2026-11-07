@@ -43,7 +43,12 @@ function ejecutarComando(args: string[]): void {
   } else if (cmd == 'asignar') {
     g.asignarResponsable(args[1], args[2]);
   } else if (cmd == 'buscar') {
-    g.buscar(o('estado'), o('tipo'), o('prioridad'), o('legajo'));
+    g.buscar({
+      estado: o('estado'),
+      tipo: o('tipo'),
+      prioridad: o('prioridad'),
+      legajo: o('legajo'),
+    });
   } else if (cmd == 'ver') {
     g.mostrar(args[1]);
   } else if (cmd == 'reporte') {

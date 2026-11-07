@@ -3,12 +3,13 @@ import * as path from 'path';
 import { DatosNuevaSolicitud, validarDatosNuevaSolicitud } from './dominio/datos-nueva-solicitud';
 import { ErrorDeValidacion, SolicitudDuplicada, SolicitudInexistente } from './dominio/errores';
 import { ESTADOS, Estado, esEstado } from './dominio/estado';
+import { CriteriosDeBusqueda, FiltroSolicitudes } from './dominio/filtro-solicitudes';
 import { aFechaISO, sumarDias } from './dominio/fecha';
-import { PRIORIDADES, esPrioridad } from './dominio/prioridad';
+import { PRIORIDADES } from './dominio/prioridad';
 import { DIAS_AVISO_VENCIMIENTO } from './dominio/reglas-de-negocio';
 import { resolverCondiciones } from './dominio/reglas-por-tipo';
 import { RegistroDeSolicitud, Solicitud } from './dominio/solicitud';
-import { TIPOS, TipoSolicitud, esTipo } from './dominio/tipo-solicitud';
+import { TIPOS, TipoSolicitud } from './dominio/tipo-solicitud';
 
 // Gestor de solicitudes academicas.
 // Se encarga de todo: valida, calcula, guarda en archivo e imprime por consola.
@@ -128,49 +129,9 @@ export class GestorSolicitudes {
     console.log('Solicitud ' + id + ' asignada a ' + s.responsable);
   }
 
-  buscar(estado?: string, tipo?: string, prioridad?: string, legajo?: string): Solicitud[] {
-    if (estado && !esEstado(estado)) throw new ErrorDeValidacion('estado inválido: ' + estado);
-    if (tipo && !esTipo(tipo)) throw new ErrorDeValidacion('tipo de solicitud inválido: ' + tipo);
-    if (prioridad && !esPrioridad(prioridad)) {
-      throw new ErrorDeValidacion('prioridad inválida: ' + prioridad);
-    }
-    let r = this.solicitudes;
-    if (estado) {
-      const t = [];
-      for (let i = 0; i < r.length; i++) {
-        if (r[i].estado == estado) {
-          t.push(r[i]);
-        }
-      }
-      r = t;
-    }
-    if (tipo) {
-      const t = [];
-      for (let i = 0; i < r.length; i++) {
-        if (r[i].tipo == tipo) {
-          t.push(r[i]);
-        }
-      }
-      r = t;
-    }
-    if (prioridad) {
-      const t = [];
-      for (let i = 0; i < r.length; i++) {
-        if (r[i].prioridad == prioridad) {
-          t.push(r[i]);
-        }
-      }
-      r = t;
-    }
-    if (legajo) {
-      const t = [];
-      for (let i = 0; i < r.length; i++) {
-        if (r[i].estudiante.legajo == legajo) {
-          t.push(r[i]);
-        }
-      }
-      r = t;
-    }
+  buscar(criterios: CriteriosDeBusqueda): Solicitud[] {
+    const filtro = FiltroSolicitudes.desde(criterios);
+    const r = this.solicitudes.filter((s) => filtro.coincide(s));
     for (let i = 0; i < r.length; i++) {
       const x = r[i];
       console.log(
@@ -214,38 +175,25 @@ export class GestorSolicitudes {
     }
   }
 
+  /** Imprime cuántas solicitudes hay en cada categoría (incluye las que tienen cero). */
+  imprimirConteo<T extends string>(categorias: readonly T[], clasificar: (s: Solicitud) => T) {
+    for (const categoria of categorias) {
+      const cantidad = this.solicitudes.filter((s) => clasificar(s) === categoria).length;
+      console.log('  ' + categoria + ': ' + cantidad);
+    }
+  }
+
   generarReporte() {
     const hoy = this.hoy();
     console.log('=== REPORTE DE SOLICITUDES (' + hoy + ') ===');
     console.log('Total: ' + this.solicitudes.length);
 
-    const estados = ESTADOS;
     console.log('Por estado:');
-    for (let i = 0; i < estados.length; i++) {
-      let c = 0;
-      for (let j = 0; j < this.solicitudes.length; j++) {
-        if (this.solicitudes[j].estado == estados[i]) c++;
-      }
-      console.log('  ' + estados[i] + ': ' + c);
-    }
-    const tipos = TIPOS;
+    this.imprimirConteo(ESTADOS, (s) => s.estado);
     console.log('Por tipo:');
-    for (let i = 0; i < tipos.length; i++) {
-      let c = 0;
-      for (let j = 0; j < this.solicitudes.length; j++) {
-        if (this.solicitudes[j].tipo == tipos[i]) c++;
-      }
-      console.log('  ' + tipos[i] + ': ' + c);
-    }
-    const prios = PRIORIDADES;
+    this.imprimirConteo(TIPOS, (s) => s.tipo);
     console.log('Por prioridad:');
-    for (let i = 0; i < prios.length; i++) {
-      let c = 0;
-      for (let j = 0; j < this.solicitudes.length; j++) {
-        if (this.solicitudes[j].prioridad == prios[i]) c++;
-      }
-      console.log('  ' + prios[i] + ': ' + c);
-    }
+    this.imprimirConteo(PRIORIDADES, (s) => s.prioridad);
 
     // vencimientos de las solicitudes que siguen abiertas
     const venc: string[] = [];
