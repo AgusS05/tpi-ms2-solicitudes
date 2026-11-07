@@ -11,12 +11,14 @@ import { ejecutarComando } from './presentacion/comandos';
  */
 export function main(args: string[]): void {
   const rutaDeDatos = process.env.SOLICITUDES_DB || './data/solicitudes.json';
-  const repositorio = new RepositorioJsonDeSolicitudes(rutaDeDatos);
   const reloj = new RelojDelSistema();
 
-  const codigoDeSalida = ejecutarComando(args, {
-    solicitudes: new ServicioDeSolicitudes(repositorio, reloj),
-    reportes: new ServicioDeReportes(repositorio, reloj),
+  const codigoDeSalida = ejecutarComando(args, () => {
+    const repositorio = new RepositorioJsonDeSolicitudes(rutaDeDatos);
+    return {
+      solicitudes: new ServicioDeSolicitudes(repositorio, reloj),
+      reportes: new ServicioDeReportes(repositorio, reloj),
+    };
   });
   if (codigoDeSalida !== 0) process.exitCode = codigoDeSalida;
 }

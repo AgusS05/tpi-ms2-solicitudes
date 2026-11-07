@@ -209,12 +209,12 @@ describe('registrar solicitud', () => {
       expect(ejecutar('ver', 'SOL-0001').codigo).toBe(0);
     });
 
-    it('DEFECTO CONOCIDO (S8): un archivo de datos corrupto se ignora en silencio y se sobrescribe', () => {
+    it('CAMBIO DELIBERADO (fix S8): un archivo de datos corrupto se informa y no se pisa', () => {
       writeFileSync(entorno.rutaDb(), 'esto no es json {{{');
       const r = ejecutar(...argsRegistrar());
-      expect(r.codigo).toBe(0);
-      const guardado = JSON.parse(readFileSync(entorno.rutaDb(), 'utf8'));
-      expect(guardado.solicitudes).toHaveLength(1);
+      expect(r.codigo).toBe(1);
+      expect(r.salida[0]).toContain('ERROR: el archivo de datos está dañado');
+      expect(readFileSync(entorno.rutaDb(), 'utf8')).toBe('esto no es json {{{');
     });
   });
 });

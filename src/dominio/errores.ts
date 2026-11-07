@@ -36,3 +36,10 @@ export class ReasignacionNoPermitida extends ErrorDeDominio {
     super(`no se puede reasignar una solicitud en estado ${estado}`);
   }
 }
+
+/** El archivo de datos existe pero no se puede interpretar: se informa en vez de pisarlo. */
+export class BaseDeDatosCorrupta extends ErrorDeDominio {
+  constructor(ruta: string) {
+    super(`el archivo de datos está dañado y no se modificó: ${ruta}`);
+  }
+}

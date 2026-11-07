@@ -66,16 +66,16 @@ const COMANDOS: Readonly<Record<string, Comando>> = {
 
 /**
  * Ejecuta un comando e imprime su resultado. Es el borde del sistema: acá (y solo acá) se
- * traducen los errores de dominio a un mensaje y a un código de salida (0 = ok, 1 = error).
+ * traducen los errores de dominio (también los de armado, como una base dañada) a un mensaje y a un código de salida (0 = ok, 1 = error).
  */
-export function ejecutarComando(args: string[], servicios: Servicios): number {
+export function ejecutarComando(args: string[], crearServicios: () => Servicios): number {
   const nombre = args[0];
   if (nombre === undefined || !Object.hasOwn(COMANDOS, nombre)) {
     LINEAS_DE_AYUDA.forEach((linea) => console.log(linea));
     return 1;
   }
   try {
-    COMANDOS[nombre](args, servicios).forEach((linea) => console.log(linea));
+    COMANDOS[nombre](args, crearServicios()).forEach((linea) => console.log(linea));
     return 0;
   } catch (error) {
     if (!(error instanceof ErrorDeDominio)) throw error;
