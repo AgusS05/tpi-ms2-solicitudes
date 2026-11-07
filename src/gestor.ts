@@ -1,21 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { DatosNuevaSolicitud, validarDatosNuevaSolicitud } from './dominio/datos-nueva-solicitud';
-import {
-  ErrorDeValidacion,
-  ReasignacionNoPermitida,
-  SolicitudDuplicada,
-  SolicitudInexistente,
-  TransicionNoPermitida,
-} from './dominio/errores';
-import { ESTADOS, Estado, esEstado, puedeTransicionar } from './dominio/estado';
-import { PRIORIDADES, Prioridad, esPrioridad } from './dominio/prioridad';
-import {
-  DIAS_AVISO_VENCIMIENTO,
-  MS_POR_DIA,
-  PLAZO_MAXIMO_PRIORIDAD_ALTA,
-} from './dominio/reglas-de-negocio';
-import { REGLAS_POR_TIPO } from './dominio/reglas-por-tipo';
+import { ErrorDeValidacion, SolicitudDuplicada, SolicitudInexistente } from './dominio/errores';
+import { ESTADOS, Estado, esEstado } from './dominio/estado';
+import { aFechaISO, sumarDias } from './dominio/fecha';
+import { PRIORIDADES, esPrioridad } from './dominio/prioridad';
+import { DIAS_AVISO_VENCIMIENTO } from './dominio/reglas-de-negocio';
+import { resolverCondiciones } from './dominio/reglas-por-tipo';
 import { RegistroDeSolicitud, Solicitud } from './dominio/solicitud';
 import { TIPOS, TipoSolicitud, esTipo } from './dominio/tipo-solicitud';
 
@@ -53,7 +44,7 @@ export class GestorSolicitudes {
   registrarSolicitud(datos: DatosNuevaSolicitud): string {
     const nueva = validarDatosNuevaSolicitud(datos);
 
-    const reglas = this.reglasDelTipo(nueva.tipo, nueva.prioridad, nueva.plazoDias);
+    const reglas = resolverCondiciones(nueva.tipo, nueva.prioridad, nueva.plazoDias);
 
     if (this.existeSolicitudActiva(nueva.estudiante.legajo, nueva.tipo)) {
       throw new SolicitudDuplicada(nueva.estudiante.legajo);
@@ -71,7 +62,7 @@ export class GestorSolicitudes {
       estado: Estado.PENDIENTE,
       responsable: nueva.responsable ? nueva.responsable : reglas.area,
       fechaCreacion: hoy,
-      fechaLimite: this.calcularFechaLimite(reglas.plazo),
+      fechaLimite: this.calcularFechaLimite(reglas.plazoDias),
       historial: [{ fecha: hoy, de: null, a: Estado.PENDIENTE }],
     });
     this.solicitudes.push(s);
@@ -90,33 +81,13 @@ export class GestorSolicitudes {
     return id;
   }
 
-  /** Prioridad, plazo en días y área responsable según el tipo de solicitud. */
-  reglasDelTipo(
-    tipo: TipoSolicitud,
-    prioridad?: Prioridad,
-    dias?: number,
-  ): { prioridad: Prioridad; plazo: number; area: string } {
-    const regla = REGLAS_POR_TIPO[tipo];
-    const prioridadFinal = prioridad || regla.prioridadPorDefecto;
-    let plazo = regla.plazoDias;
-    if (!dias) {
-      if (prioridadFinal == Prioridad.ALTA) {
-        plazo = Math.min(plazo, PLAZO_MAXIMO_PRIORIDAD_ALTA);
-      }
-    } else {
-      plazo = dias;
-    }
-    return { prioridad: prioridadFinal, plazo: plazo, area: regla.areaResponsable };
-  }
-
   /** Una solicitud está activa mientras esté PENDIENTE o EN_REVISION. */
   existeSolicitudActiva(legajo: string, tipo: TipoSolicitud): boolean {
     for (let i = 0; i < this.solicitudes.length; i++) {
       if (
         this.solicitudes[i].estudiante.legajo == legajo &&
         this.solicitudes[i].tipo == tipo &&
-        (this.solicitudes[i].estado == Estado.PENDIENTE ||
-          this.solicitudes[i].estado == Estado.EN_REVISION)
+        this.solicitudes[i].estaAbierta()
       ) {
         return true;
       }
@@ -133,33 +104,26 @@ export class GestorSolicitudes {
 
   /** Fecha actual en formato AAAA-MM-DD. */
   hoy(): string {
-    return new Date().toISOString().slice(0, 10);
+    return aFechaISO(new Date());
   }
 
   calcularFechaLimite(plazoEnDias: number): string {
-    return new Date(new Date().getTime() + plazoEnDias * MS_POR_DIA).toISOString().slice(0, 10);
+    return aFechaISO(sumarDias(new Date(), plazoEnDias));
   }
 
   cambiarEstado(id: string, nuevo: string): void {
     const s = this.buscarPorId(id);
     if (s == null) throw new SolicitudInexistente(id);
     if (!esEstado(nuevo)) throw new ErrorDeValidacion('estado inválido: ' + nuevo);
-    const anterior = s.estado;
-    if (!puedeTransicionar(anterior, nuevo)) throw new TransicionNoPermitida(anterior, nuevo);
-    s.estado = nuevo;
-    s.historial.push({ fecha: this.hoy(), de: anterior, a: nuevo });
+    const cambio = s.cambiarEstado(nuevo, this.hoy());
     this.guardar();
-    console.log('Solicitud ' + id + ': ' + anterior + ' -> ' + nuevo);
+    console.log('Solicitud ' + id + ': ' + cambio.de + ' -> ' + cambio.a);
   }
 
   asignarResponsable(id: string, resp: string): void {
     const s = this.buscarPorId(id);
     if (s == null) throw new SolicitudInexistente(id);
-    if (!resp || resp.trim() == '') throw new ErrorDeValidacion('el responsable es obligatorio');
-    if (s.estado != Estado.PENDIENTE && s.estado != Estado.EN_REVISION) {
-      throw new ReasignacionNoPermitida(s.estado);
-    }
-    s.responsable = resp.trim();
+    s.reasignar(resp);
     this.guardar();
     console.log('Solicitud ' + id + ' asignada a ' + s.responsable);
   }
@@ -288,21 +252,26 @@ export class GestorSolicitudes {
     const prox: string[] = [];
     for (let i = 0; i < this.solicitudes.length; i++) {
       const s = this.solicitudes[i];
-      if (s.estado == Estado.PENDIENTE || s.estado == Estado.EN_REVISION) {
-        const dif = Math.round(
-          (new Date(s.fechaLimite + 'T00:00:00Z').getTime() -
-            new Date(hoy + 'T00:00:00Z').getTime()) /
-            MS_POR_DIA,
+      if (s.estaVencida(hoy)) {
+        venc.push(
+          '  ' +
+            s.id +
+            ' vencida hace ' +
+            -s.diasParaVencer(hoy) +
+            ' días (responsable: ' +
+            s.responsable +
+            ')',
         );
-        if (dif < 0) {
-          venc.push(
-            '  ' + s.id + ' vencida hace ' + -dif + ' días (responsable: ' + s.responsable + ')',
-          );
-        } else if (dif <= DIAS_AVISO_VENCIMIENTO) {
-          prox.push(
-            '  ' + s.id + ' vence en ' + dif + ' días (responsable: ' + s.responsable + ')',
-          );
-        }
+      } else if (s.estaPorVencer(hoy)) {
+        prox.push(
+          '  ' +
+            s.id +
+            ' vence en ' +
+            s.diasParaVencer(hoy) +
+            ' días (responsable: ' +
+            s.responsable +
+            ')',
+        );
       }
     }
     console.log('Vencidas: ' + venc.length);

@@ -1,4 +1,5 @@
 import { Prioridad } from './prioridad';
+import { PLAZO_MAXIMO_PRIORIDAD_ALTA } from './reglas-de-negocio';
 import { TipoSolicitud } from './tipo-solicitud';
 
 /** Reglas de negocio que dependen del tipo de solicitud. */
@@ -36,3 +37,29 @@ export const REGLAS_POR_TIPO: Readonly<Record<TipoSolicitud, ReglaDeTipo>> = {
     areaResponsable: 'Dirección de Carrera',
   },
 };
+
+export interface CondicionesDeAtencion {
+  prioridad: Prioridad;
+  plazoDias: number;
+  area: string;
+}
+
+/**
+ * Prioridad, plazo y área con que se atiende una solicitud nueva.
+ * Un plazo explícito prevalece; si no, una prioridad ALTA acota el plazo propio del tipo.
+ */
+export function resolverCondiciones(
+  tipo: TipoSolicitud,
+  prioridad?: Prioridad,
+  plazoExplicito?: number,
+): CondicionesDeAtencion {
+  const regla = REGLAS_POR_TIPO[tipo];
+  const prioridadFinal = prioridad ?? regla.prioridadPorDefecto;
+  let plazoDias = regla.plazoDias;
+  if (plazoExplicito) {
+    plazoDias = plazoExplicito;
+  } else if (prioridadFinal === Prioridad.ALTA) {
+    plazoDias = Math.min(plazoDias, PLAZO_MAXIMO_PRIORIDAD_ALTA);
+  }
+  return { prioridad: prioridadFinal, plazoDias, area: regla.areaResponsable };
+}

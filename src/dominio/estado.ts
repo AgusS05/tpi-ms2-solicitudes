@@ -12,6 +12,9 @@ export type Estado = (typeof Estado)[keyof typeof Estado];
 /** Todos los estados, en el orden en que se muestran en los reportes. */
 export const ESTADOS: readonly Estado[] = Object.values(Estado);
 
+/** Estados en los que una solicitud sigue en trámite. */
+export const ESTADOS_ABIERTOS: readonly Estado[] = [Estado.PENDIENTE, Estado.EN_REVISION];
+
 export function esEstado(valor: unknown): valor is Estado {
   return ESTADOS.includes(valor as Estado);
 }
