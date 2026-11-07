@@ -1,0 +1,848 @@
+{
+  "resumen": {
+    "etiqueta": "v2",
+    "directorio": "src",
+    "archivos": 21,
+    "lineasDeCodigo": 759,
+    "funciones": 102,
+    "complejidadMax": 8,
+    "complejidadPromedio": 1.5,
+    "lineasPorFuncionMax": 21,
+    "lineasPorFuncionPromedio": 4.9,
+    "parametrosMax": 4,
+    "funcionesSobreUmbralComplejidad": 0,
+    "funcionesSobreUmbralLineas": 0,
+    "funcionesSobreUmbralParametros": 0,
+    "archivoMasGrande": {
+      "archivo": "src/dominio/solicitud.ts",
+      "lineas": 133
+    },
+    "violacionesCalidad": 8,
+    "violacionesPorRegla": {
+      "no-magic-numbers": 8
+    },
+    "duplicacion": {
+      "porcentaje": 0,
+      "clones": 0,
+      "lineasDuplicadas": 0
+    }
+  },
+  "funciones": [
+    {
+      "complejidad": 1,
+      "lineas": 4,
+      "parametros": 2,
+      "archivo": "src/aplicacion/servicio-reportes.ts",
+      "nombre": "constructor",
+      "linea": 36
+    },
+    {
+      "complejidad": 1,
+      "lineas": 18,
+      "parametros": 0,
+      "archivo": "src/aplicacion/servicio-reportes.ts",
+      "nombre": "generar",
+      "linea": 41
+    },
+    {
+      "complejidad": 1,
+      "lineas": 5,
+      "parametros": 1,
+      "archivo": "src/aplicacion/servicio-reportes.ts",
+      "nombre": "(anónima)",
+      "linea": 44
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/aplicacion/servicio-reportes.ts",
+      "nombre": "(anónima)",
+      "linea": 52
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/aplicacion/servicio-reportes.ts",
+      "nombre": "(anónima)",
+      "linea": 53
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/aplicacion/servicio-reportes.ts",
+      "nombre": "(anónima)",
+      "linea": 54
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/aplicacion/servicio-reportes.ts",
+      "nombre": "(anónima)",
+      "linea": 55
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/aplicacion/servicio-reportes.ts",
+      "nombre": "(anónima)",
+      "linea": 56
+    },
+    {
+      "complejidad": 1,
+      "lineas": 10,
+      "parametros": 3,
+      "archivo": "src/aplicacion/servicio-reportes.ts",
+      "nombre": "contar",
+      "linea": 62
+    },
+    {
+      "complejidad": 1,
+      "lineas": 0,
+      "parametros": 1,
+      "archivo": "src/aplicacion/servicio-reportes.ts",
+      "nombre": "(anónima)",
+      "linea": 65
+    },
+    {
+      "complejidad": 1,
+      "lineas": 4,
+      "parametros": 1,
+      "archivo": "src/aplicacion/servicio-reportes.ts",
+      "nombre": "(anónima)",
+      "linea": 67
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/aplicacion/servicio-reportes.ts",
+      "nombre": "(anónima)",
+      "linea": 69
+    },
+    {
+      "complejidad": 1,
+      "lineas": 4,
+      "parametros": 2,
+      "archivo": "src/aplicacion/servicio-solicitudes.ts",
+      "nombre": "constructor",
+      "linea": 22
+    },
+    {
+      "complejidad": 2,
+      "lineas": 21,
+      "parametros": 1,
+      "archivo": "src/aplicacion/servicio-solicitudes.ts",
+      "nombre": "registrar",
+      "linea": 27
+    },
+    {
+      "complejidad": 2,
+      "lineas": 7,
+      "parametros": 2,
+      "archivo": "src/aplicacion/servicio-solicitudes.ts",
+      "nombre": "cambiarEstado",
+      "linea": 50
+    },
+    {
+      "complejidad": 1,
+      "lineas": 6,
+      "parametros": 2,
+      "archivo": "src/aplicacion/servicio-solicitudes.ts",
+      "nombre": "asignarResponsable",
+      "linea": 58
+    },
+    {
+      "complejidad": 1,
+      "lineas": 4,
+      "parametros": 1,
+      "archivo": "src/aplicacion/servicio-solicitudes.ts",
+      "nombre": "buscar",
+      "linea": 65
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/aplicacion/servicio-solicitudes.ts",
+      "nombre": "(anónima)",
+      "linea": 67
+    },
+    {
+      "complejidad": 2,
+      "lineas": 5,
+      "parametros": 1,
+      "archivo": "src/aplicacion/servicio-solicitudes.ts",
+      "nombre": "obtener",
+      "linea": 70
+    },
+    {
+      "complejidad": 2,
+      "lineas": 6,
+      "parametros": 2,
+      "archivo": "src/aplicacion/servicio-solicitudes.ts",
+      "nombre": "verificarQueNoHayUnaActiva",
+      "linea": 76
+    },
+    {
+      "complejidad": 3,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/aplicacion/servicio-solicitudes.ts",
+      "nombre": "(anónima)",
+      "linea": 79
+    },
+    {
+      "complejidad": 3,
+      "lineas": 12,
+      "parametros": 1,
+      "archivo": "src/cli.ts",
+      "nombre": "main",
+      "linea": 12
+    },
+    {
+      "complejidad": 1,
+      "lineas": 7,
+      "parametros": 0,
+      "archivo": "src/cli.ts",
+      "nombre": "(anónima)",
+      "linea": 16
+    },
+    {
+      "complejidad": 3,
+      "lineas": 3,
+      "parametros": 2,
+      "archivo": "src/dominio/datos-nueva-solicitud.ts",
+      "nombre": "exigirTexto",
+      "linea": 37
+    },
+    {
+      "complejidad": 3,
+      "lineas": 7,
+      "parametros": 1,
+      "archivo": "src/dominio/datos-nueva-solicitud.ts",
+      "nombre": "exigirDescripcion",
+      "linea": 41
+    },
+    {
+      "complejidad": 3,
+      "lineas": 5,
+      "parametros": 1,
+      "archivo": "src/dominio/datos-nueva-solicitud.ts",
+      "nombre": "parsearPrioridad",
+      "linea": 49
+    },
+    {
+      "complejidad": 5,
+      "lineas": 8,
+      "parametros": 1,
+      "archivo": "src/dominio/datos-nueva-solicitud.ts",
+      "nombre": "exigirPlazoValido",
+      "linea": 55
+    },
+    {
+      "complejidad": 3,
+      "lineas": 18,
+      "parametros": 1,
+      "archivo": "src/dominio/datos-nueva-solicitud.ts",
+      "nombre": "validarDatosNuevaSolicitud",
+      "linea": 68
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/dominio/email.ts",
+      "nombre": "constructor",
+      "linea": 5
+    },
+    {
+      "complejidad": 3,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/dominio/email.ts",
+      "nombre": "esValido",
+      "linea": 7
+    },
+    {
+      "complejidad": 2,
+      "lineas": 4,
+      "parametros": 1,
+      "archivo": "src/dominio/email.ts",
+      "nombre": "crear",
+      "linea": 11
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 0,
+      "archivo": "src/dominio/email.ts",
+      "nombre": "toString",
+      "linea": 16
+    },
+    {
+      "complejidad": 1,
+      "lineas": 4,
+      "parametros": 1,
+      "archivo": "src/dominio/errores.ts",
+      "nombre": "constructor",
+      "linea": 7
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/dominio/errores.ts",
+      "nombre": "constructor",
+      "linea": 17
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/dominio/errores.ts",
+      "nombre": "constructor",
+      "linea": 23
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 2,
+      "archivo": "src/dominio/errores.ts",
+      "nombre": "constructor",
+      "linea": 29
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/dominio/errores.ts",
+      "nombre": "constructor",
+      "linea": 35
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/dominio/errores.ts",
+      "nombre": "constructor",
+      "linea": 42
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/dominio/estado.ts",
+      "nombre": "esEstado",
+      "linea": 18
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 2,
+      "archivo": "src/dominio/estado.ts",
+      "nombre": "puedeTransicionar",
+      "linea": 34
+    },
+    {
+      "complejidad": 1,
+      "lineas": 5,
+      "parametros": 3,
+      "archivo": "src/dominio/estudiante.ts",
+      "nombre": "constructor",
+      "linea": 5
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/dominio/fecha.ts",
+      "nombre": "aFechaISO",
+      "linea": 6
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 2,
+      "archivo": "src/dominio/fecha.ts",
+      "nombre": "sumarDias",
+      "linea": 10
+    },
+    {
+      "complejidad": 1,
+      "lineas": 4,
+      "parametros": 2,
+      "archivo": "src/dominio/fecha.ts",
+      "nombre": "diferenciaEnDias",
+      "linea": 15
+    },
+    {
+      "complejidad": 3,
+      "lineas": 9,
+      "parametros": 3,
+      "archivo": "src/dominio/filtro-solicitudes.ts",
+      "nombre": "parsearOpcional",
+      "linea": 16
+    },
+    {
+      "complejidad": 1,
+      "lineas": 0,
+      "parametros": 1,
+      "archivo": "src/dominio/filtro-solicitudes.ts",
+      "nombre": "(anónima)",
+      "linea": 18
+    },
+    {
+      "complejidad": 1,
+      "lineas": 6,
+      "parametros": 4,
+      "archivo": "src/dominio/filtro-solicitudes.ts",
+      "nombre": "constructor",
+      "linea": 31
+    },
+    {
+      "complejidad": 2,
+      "lineas": 6,
+      "parametros": 1,
+      "archivo": "src/dominio/filtro-solicitudes.ts",
+      "nombre": "desde",
+      "linea": 39
+    },
+    {
+      "complejidad": 8,
+      "lineas": 8,
+      "parametros": 1,
+      "archivo": "src/dominio/filtro-solicitudes.ts",
+      "nombre": "coincide",
+      "linea": 46
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/dominio/prioridad.ts",
+      "nombre": "esPrioridad",
+      "linea": 13
+    },
+    {
+      "complejidad": 4,
+      "lineas": 15,
+      "parametros": 3,
+      "archivo": "src/dominio/reglas-por-tipo.ts",
+      "nombre": "resolverCondiciones",
+      "linea": 51
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/dominio/solicitud.ts",
+      "nombre": "identificadorDe",
+      "linea": 46
+    },
+    {
+      "complejidad": 1,
+      "lineas": 12,
+      "parametros": 1,
+      "archivo": "src/dominio/solicitud.ts",
+      "nombre": "constructor",
+      "linea": 66
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 0,
+      "archivo": "src/dominio/solicitud.ts",
+      "nombre": "estado",
+      "linea": 79
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 0,
+      "archivo": "src/dominio/solicitud.ts",
+      "nombre": "responsable",
+      "linea": 83
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 0,
+      "archivo": "src/dominio/solicitud.ts",
+      "nombre": "historial",
+      "linea": 87
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 0,
+      "archivo": "src/dominio/solicitud.ts",
+      "nombre": "estaAbierta",
+      "linea": 92
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/dominio/solicitud.ts",
+      "nombre": "diasParaVencer",
+      "linea": 97
+    },
+    {
+      "complejidad": 2,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/dominio/solicitud.ts",
+      "nombre": "estaVencida",
+      "linea": 101
+    },
+    {
+      "complejidad": 4,
+      "lineas": 4,
+      "parametros": 2,
+      "archivo": "src/dominio/solicitud.ts",
+      "nombre": "estaPorVencer",
+      "linea": 105
+    },
+    {
+      "complejidad": 2,
+      "lineas": 8,
+      "parametros": 2,
+      "archivo": "src/dominio/solicitud.ts",
+      "nombre": "cambiarEstado",
+      "linea": 111
+    },
+    {
+      "complejidad": 4,
+      "lineas": 7,
+      "parametros": 1,
+      "archivo": "src/dominio/solicitud.ts",
+      "nombre": "reasignar",
+      "linea": 121
+    },
+    {
+      "complejidad": 1,
+      "lineas": 14,
+      "parametros": 1,
+      "archivo": "src/dominio/solicitud.ts",
+      "nombre": "desdeRegistro",
+      "linea": 129
+    },
+    {
+      "complejidad": 1,
+      "lineas": 16,
+      "parametros": 0,
+      "archivo": "src/dominio/solicitud.ts",
+      "nombre": "aRegistro",
+      "linea": 144
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/dominio/tipo-solicitud.ts",
+      "nombre": "esTipo",
+      "linea": 15
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 0,
+      "archivo": "src/infraestructura/reloj-del-sistema.ts",
+      "nombre": "ahora",
+      "linea": 4
+    },
+    {
+      "complejidad": 1,
+      "lineas": 0,
+      "parametros": 0,
+      "archivo": "src/infraestructura/repositorio-en-memoria.ts",
+      "nombre": "(anónima)",
+      "linea": 11
+    },
+    {
+      "complejidad": 1,
+      "lineas": 0,
+      "parametros": 0,
+      "archivo": "src/infraestructura/repositorio-en-memoria.ts",
+      "nombre": "(anónima)",
+      "linea": 12
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 0,
+      "archivo": "src/infraestructura/repositorio-en-memoria.ts",
+      "nombre": "todas",
+      "linea": 14
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/infraestructura/repositorio-en-memoria.ts",
+      "nombre": "buscarPorId",
+      "linea": 18
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/infraestructura/repositorio-en-memoria.ts",
+      "nombre": "(anónima)",
+      "linea": 19
+    },
+    {
+      "complejidad": 1,
+      "lineas": 4,
+      "parametros": 0,
+      "archivo": "src/infraestructura/repositorio-en-memoria.ts",
+      "nombre": "siguienteNumero",
+      "linea": 22
+    },
+    {
+      "complejidad": 2,
+      "lineas": 4,
+      "parametros": 1,
+      "archivo": "src/infraestructura/repositorio-en-memoria.ts",
+      "nombre": "guardar",
+      "linea": 27
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 0,
+      "archivo": "src/infraestructura/repositorio-en-memoria.ts",
+      "nombre": "alGuardar",
+      "linea": 33
+    },
+    {
+      "complejidad": 3,
+      "lineas": 13,
+      "parametros": 1,
+      "archivo": "src/infraestructura/repositorio-json.ts",
+      "nombre": "constructor",
+      "linea": 9
+    },
+    {
+      "complejidad": 1,
+      "lineas": 2,
+      "parametros": 1,
+      "archivo": "src/infraestructura/repositorio-json.ts",
+      "nombre": "(anónima)",
+      "linea": 14
+    },
+    {
+      "complejidad": 1,
+      "lineas": 8,
+      "parametros": 0,
+      "archivo": "src/infraestructura/repositorio-json.ts",
+      "nombre": "alGuardar",
+      "linea": 23
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/infraestructura/repositorio-json.ts",
+      "nombre": "(anónima)",
+      "linea": 26
+    },
+    {
+      "complejidad": 1,
+      "lineas": 0,
+      "parametros": 2,
+      "archivo": "src/presentacion/comandos.ts",
+      "nombre": "(anónima)",
+      "linea": 21
+    },
+    {
+      "complejidad": 2,
+      "lineas": 4,
+      "parametros": 2,
+      "archivo": "src/presentacion/comandos.ts",
+      "nombre": "opcion",
+      "linea": 24
+    },
+    {
+      "complejidad": 2,
+      "lineas": 13,
+      "parametros": 1,
+      "archivo": "src/presentacion/comandos.ts",
+      "nombre": "datosDeRegistro",
+      "linea": 29
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 2,
+      "archivo": "src/presentacion/comandos.ts",
+      "nombre": "registrar",
+      "linea": 45
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 2,
+      "archivo": "src/presentacion/comandos.ts",
+      "nombre": "estado",
+      "linea": 48
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 2,
+      "archivo": "src/presentacion/comandos.ts",
+      "nombre": "asignar",
+      "linea": 51
+    },
+    {
+      "complejidad": 1,
+      "lineas": 9,
+      "parametros": 2,
+      "archivo": "src/presentacion/comandos.ts",
+      "nombre": "buscar",
+      "linea": 54
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 2,
+      "archivo": "src/presentacion/comandos.ts",
+      "nombre": "ver",
+      "linea": 63
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 2,
+      "archivo": "src/presentacion/comandos.ts",
+      "nombre": "reporte",
+      "linea": 64
+    },
+    {
+      "complejidad": 5,
+      "lineas": 15,
+      "parametros": 2,
+      "archivo": "src/presentacion/comandos.ts",
+      "nombre": "ejecutarComando",
+      "linea": 71
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/presentacion/comandos.ts",
+      "nombre": "(anónima)",
+      "linea": 74
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/presentacion/comandos.ts",
+      "nombre": "(anónima)",
+      "linea": 78
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 2,
+      "archivo": "src/presentacion/formato.ts",
+      "nombre": "lineasDeConteo",
+      "linea": 8
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/presentacion/formato.ts",
+      "nombre": "(anónima)",
+      "linea": 9
+    },
+    {
+      "complejidad": 1,
+      "lineas": 17,
+      "parametros": 1,
+      "archivo": "src/presentacion/formato.ts",
+      "nombre": "lineasDeReporte",
+      "linea": 12
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/presentacion/formato.ts",
+      "nombre": "(anónima)",
+      "linea": 21
+    },
+    {
+      "complejidad": 1,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/presentacion/formato.ts",
+      "nombre": "(anónima)",
+      "linea": 25
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/presentacion/formato.ts",
+      "nombre": "lineaDeRegistro",
+      "linea": 40
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/presentacion/formato.ts",
+      "nombre": "lineaDeCambioDeEstado",
+      "linea": 44
+    },
+    {
+      "complejidad": 1,
+      "lineas": 3,
+      "parametros": 1,
+      "archivo": "src/presentacion/formato.ts",
+      "nombre": "lineaDeAsignacion",
+      "linea": 48
+    },
+    {
+      "complejidad": 1,
+      "lineas": 7,
+      "parametros": 1,
+      "archivo": "src/presentacion/formato.ts",
+      "nombre": "lineasDeBusqueda",
+      "linea": 52
+    },
+    {
+      "complejidad": 1,
+      "lineas": 2,
+      "parametros": 1,
+      "archivo": "src/presentacion/formato.ts",
+      "nombre": "(anónima)",
+      "linea": 54
+    },
+    {
+      "complejidad": 1,
+      "lineas": 11,
+      "parametros": 1,
+      "archivo": "src/presentacion/formato.ts",
+      "nombre": "lineasDeDetalle",
+      "linea": 60
+    },
+    {
+      "complejidad": 2,
+      "lineas": 1,
+      "parametros": 1,
+      "archivo": "src/presentacion/formato.ts",
+      "nombre": "(anónima)",
+      "linea": 68
+    }
+  ]
+}

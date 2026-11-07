@@ -1,0 +1,21 @@
+
+/home/claude/tpi-ms2-solicitudes/src/cli.ts
+  27:27  warning  No magic number: 2  no-magic-numbers
+
+/home/claude/tpi-ms2-solicitudes/src/dominio/fecha.ts
+  7:39  warning  No magic number: 10  no-magic-numbers
+
+/home/claude/tpi-ms2-solicitudes/src/dominio/reglas-de-negocio.ts
+  9:27  warning  No magic number: 24    no-magic-numbers
+  9:32  warning  No magic number: 60    no-magic-numbers
+  9:37  warning  No magic number: 60    no-magic-numbers
+  9:42  warning  No magic number: 1000  no-magic-numbers
+
+/home/claude/tpi-ms2-solicitudes/src/dominio/solicitud.ts
+  47:43  warning  No magic number: 4  no-magic-numbers
+
+/home/claude/tpi-ms2-solicitudes/src/infraestructura/repositorio-json.ts
+  29:61  warning  No magic number: 2  no-magic-numbers
+
+✖ 8 problems (0 errors, 8 warnings)
+

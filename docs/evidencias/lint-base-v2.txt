@@ -1,0 +1,1 @@
+(sin hallazgos: eslint . terminó con 0 errores y 0 advertencias)
