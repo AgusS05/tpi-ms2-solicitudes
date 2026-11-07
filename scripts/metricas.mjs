@@ -47,7 +47,9 @@ const funciones = new Map();
 const archivos = [];
 const numero = (texto, regex) => Number(texto.match(regex)?.[1] ?? NaN);
 const nombreDe = (texto) => {
-  const m = texto.match(/^(?:Async )?(?:Method|Function|Constructor|Arrow function|Static method|Getter|Setter)(?: '([^']+)')?/i);
+  const m = texto.match(
+    /^(?:Async )?(?:Method|Function|Constructor|Arrow function|Static method|Getter|Setter)(?: '([^']+)')?/i,
+  );
   if (/^Constructor/i.test(texto)) return 'constructor';
   return m?.[1] ?? '(anónima)';
 };
@@ -79,7 +81,8 @@ const eslintCalidad = new ESLint({ cwd: raiz, overrideConfigFile: 'eslint.calida
 const resCalidad = await eslintCalidad.lintFiles([`${directorio}/**/*.ts`]);
 const porRegla = {};
 for (const r of resCalidad)
-  for (const m of r.messages) porRegla[m.ruleId ?? 'sintaxis'] = (porRegla[m.ruleId ?? 'sintaxis'] ?? 0) + 1;
+  for (const m of r.messages)
+    porRegla[m.ruleId ?? 'sintaxis'] = (porRegla[m.ruleId ?? 'sintaxis'] ?? 0) + 1;
 const totalViolaciones = Object.values(porRegla).reduce((a, b) => a + b, 0);
 
 // 3) Duplicación con jscpd.
@@ -88,13 +91,28 @@ try {
   const salida = mkdtempSync(join(tmpdir(), 'jscpd-'));
   execFileSync(
     'pnpm',
-    ['exec', 'jscpd', directorio, '--min-tokens', '40', '--silent', '--reporters', 'json', '--output', salida],
+    [
+      'exec',
+      'jscpd',
+      directorio,
+      '--min-tokens',
+      '40',
+      '--silent',
+      '--reporters',
+      'json',
+      '--output',
+      salida,
+    ],
     { cwd: raiz, stdio: 'pipe', shell: process.platform === 'win32' },
   );
   const reporte = join(salida, 'jscpd-report.json');
   if (existsSync(reporte)) {
     const t = JSON.parse(readFileSync(reporte, 'utf8')).statistics.total;
-    duplicacion = { porcentaje: +t.percentage.toFixed(1), clones: t.clones, lineasDuplicadas: t.duplicatedLines };
+    duplicacion = {
+      porcentaje: +t.percentage.toFixed(1),
+      clones: t.clones,
+      lineasDuplicadas: t.duplicatedLines,
+    };
   }
 } catch (e) {
   duplicacion.error = String(e.message).split('\n')[0];
@@ -147,7 +165,8 @@ const md = [
   '| Función | Archivo | Complejidad | Líneas | Parámetros |',
   '|---|---|---|---|---|',
   ...peores.map(
-    (f) => `| ${f.nombre} | ${f.archivo}:${f.linea} | ${f.complejidad} | ${f.lineas} | ${f.parametros} |`,
+    (f) =>
+      `| ${f.nombre} | ${f.archivo}:${f.linea} | ${f.complejidad} | ${f.lineas} | ${f.parametros} |`,
   ),
   '',
   'Violaciones por regla: ' +
@@ -160,6 +179,7 @@ const md = [
 
 console.log(md);
 const salidaJson = opcion('json');
-if (salidaJson) writeFileSync(salidaJson, JSON.stringify({ resumen, funciones: lista }, null, 2) + '\n');
+if (salidaJson)
+  writeFileSync(salidaJson, JSON.stringify({ resumen, funciones: lista }, null, 2) + '\n');
 const salidaMd = opcion('md');
 if (salidaMd) writeFileSync(salidaMd, md);
