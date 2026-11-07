@@ -38,19 +38,73 @@ export class GestorSolicitudes {
     dias: number,
     responsable: string,
   ): any {
-    // validaciones
-    if (!legajo || legajo.trim() == '') {
-      console.log('ERROR: el legajo es obligatorio');
+    const mensajeDeError = this.validarDatosDeRegistro(
+      legajo,
+      nombre,
+      email,
+      tipo,
+      descripcion,
+      prioridad,
+      dias,
+    );
+    if (mensajeDeError) {
+      console.log(mensajeDeError);
       return -1;
     }
-    if (!nombre || nombre.trim() == '') {
-      console.log('ERROR: el nombre es obligatorio');
+
+    const reglas = this.reglasDelTipo(tipo, prioridad, dias);
+
+    if (this.existeSolicitudActiva(legajo, tipo)) {
+      console.log('ERROR: ya existe una solicitud activa de ese tipo para el legajo ' + legajo);
       return -1;
     }
-    if (!email || email.indexOf('@') < 1 || email.indexOf('.') < 0) {
-      console.log('ERROR: email inválido');
-      return -1;
-    }
+
+    this.contador++;
+    const id = 'SOL-' + String(this.contador).padStart(4, '0');
+    const hoy = new Date().toISOString().slice(0, 10);
+    const s = {
+      id: id,
+      legajo: legajo,
+      nombre: nombre,
+      email: email,
+      tipo: tipo,
+      descripcion: descripcion.trim(),
+      prioridad: reglas.prioridad,
+      estado: 'PENDIENTE',
+      responsable: responsable ? responsable : reglas.area,
+      fechaCreacion: hoy,
+      fechaLimite: this.calcularFechaLimite(reglas.plazo),
+      historial: [{ fecha: hoy, de: null, a: 'PENDIENTE' }],
+    };
+    this.solicitudes.push(s);
+    this.guardar();
+    console.log(
+      'Solicitud ' +
+        id +
+        ' registrada (prioridad ' +
+        s.prioridad +
+        ', vence ' +
+        s.fechaLimite +
+        ', responsable: ' +
+        s.responsable +
+        ')',
+    );
+    return id;
+  }
+
+  /** Devuelve el mensaje del primer error de validación, o null si los datos son válidos. */
+  validarDatosDeRegistro(
+    legajo: string,
+    nombre: string,
+    email: string,
+    tipo: string,
+    descripcion: string,
+    prioridad: string,
+    dias: number,
+  ): string | null {
+    if (!legajo || legajo.trim() == '') return 'ERROR: el legajo es obligatorio';
+    if (!nombre || nombre.trim() == '') return 'ERROR: el nombre es obligatorio';
+    if (!email || email.indexOf('@') < 1 || email.indexOf('.') < 0) return 'ERROR: email inválido';
     if (
       tipo != 'CERTIFICADO' &&
       tipo != 'EQUIVALENCIA' &&
@@ -58,27 +112,29 @@ export class GestorSolicitudes {
       tipo != 'REINCORPORACION' &&
       tipo != 'BAJA'
     ) {
-      console.log('ERROR: tipo de solicitud inválido: ' + tipo);
-      return -1;
+      return 'ERROR: tipo de solicitud inválido: ' + tipo;
     }
     if (!descripcion || descripcion.trim().length < 10) {
-      console.log('ERROR: la descripción debe tener al menos 10 caracteres');
-      return -1;
+      return 'ERROR: la descripción debe tener al menos 10 caracteres';
     }
     if (prioridad && prioridad != 'ALTA' && prioridad != 'MEDIA' && prioridad != 'BAJA') {
-      console.log('ERROR: prioridad inválida: ' + prioridad);
-      return -1;
+      return 'ERROR: prioridad inválida: ' + prioridad;
     }
     if (dias !== undefined && dias !== null && (isNaN(dias) || dias < 1 || dias > 60)) {
-      console.log('ERROR: plazo inválido (1 a 60 días)');
-      return -1;
+      return 'ERROR: plazo inválido (1 a 60 días)';
     }
+    return null;
+  }
 
-    // prioridad, plazo y area segun el tipo
+  /** Prioridad, plazo en días y área responsable según el tipo de solicitud. */
+  reglasDelTipo(
+    tipo: string,
+    prioridad: string,
+    dias: number,
+  ): { prioridad: string; plazo: number; area: string } {
     let p = prioridad;
     let plazo = 0;
     let area = '';
-    let tmp = 0;
     if (tipo == 'CERTIFICADO') {
       if (!p) p = 'MEDIA';
       plazo = 5;
@@ -100,59 +156,32 @@ export class GestorSolicitudes {
       plazo = 3;
       area = 'Dirección de Carrera';
     }
-    // if (tipo == 'CERTIFICADO' && prioridad == 'ALTA') { plazo = 2; }  // regla vieja
     if (!dias) {
       if (p == 'ALTA' && plazo > 3) plazo = 3;
     } else {
       plazo = dias;
     }
+    return { prioridad: p, plazo: plazo, area: area };
+  }
 
-    // no permitir dos solicitudes activas del mismo tipo para el mismo alumno
+  /** Una solicitud está activa mientras esté PENDIENTE o EN_REVISION. */
+  existeSolicitudActiva(legajo: string, tipo: string): boolean {
     for (let i = 0; i < this.solicitudes.length; i++) {
       if (
         this.solicitudes[i].legajo == legajo &&
         this.solicitudes[i].tipo == tipo &&
         (this.solicitudes[i].estado == 'PENDIENTE' || this.solicitudes[i].estado == 'EN_REVISION')
       ) {
-        console.log('ERROR: ya existe una solicitud activa de ese tipo para el legajo ' + legajo);
-        return -1;
+        return true;
       }
     }
+    return false;
+  }
 
-    this.contador++;
-    const id = 'SOL-' + String(this.contador).padStart(4, '0');
-    const hoy = new Date().toISOString().slice(0, 10);
-    const lim = new Date(new Date().getTime() + plazo * 24 * 60 * 60 * 1000)
+  calcularFechaLimite(plazoEnDias: number): string {
+    return new Date(new Date().getTime() + plazoEnDias * 24 * 60 * 60 * 1000)
       .toISOString()
       .slice(0, 10);
-    const s = {
-      id: id,
-      legajo: legajo,
-      nombre: nombre,
-      email: email,
-      tipo: tipo,
-      descripcion: descripcion.trim(),
-      prioridad: p,
-      estado: 'PENDIENTE',
-      responsable: responsable ? responsable : area,
-      fechaCreacion: hoy,
-      fechaLimite: lim,
-      historial: [{ fecha: hoy, de: null, a: 'PENDIENTE' }],
-    };
-    this.solicitudes.push(s);
-    this.guardar();
-    console.log(
-      'Solicitud ' +
-        id +
-        ' registrada (prioridad ' +
-        p +
-        ', vence ' +
-        lim +
-        ', responsable: ' +
-        s.responsable +
-        ')',
-    );
-    return id;
   }
 
   cambiarEstado(id: string, nuevo: string): boolean {
