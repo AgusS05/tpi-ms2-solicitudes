@@ -1,0 +1,41 @@
+{
+  "name": "gestion-solicitudes-academicas",
+  "version": "1.0.0",
+  "description": "TPI Metodología de Sistemas II (UTN TUP) - Sistema de Gestión de Solicitudes Académicas: diagnóstico de calidad, refactoring seguro y code review.",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "tsx src/cli.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:calidad": "eslint -c eslint.calidad.config.js src",
+    "metricas": "node scripts/metricas.mjs",
+    "duplicacion": "jscpd src --min-tokens 40 --reporters console",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.6",
+    "@vitest/coverage-v8": "^5.1.0",
+    "eslint": "^10.14.0",
+    "eslint-plugin-sonarjs": "^4.2.2",
+    "jscpd": "^5.4.2",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.1",
+    "vitest": "^5.1.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
