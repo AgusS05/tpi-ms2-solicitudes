@@ -1,5 +1,4 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import { RepositorioDeSolicitudes, Reloj } from './aplicacion/puertos';
 import { DatosNuevaSolicitud, validarDatosNuevaSolicitud } from './dominio/datos-nueva-solicitud';
 import { ErrorDeValidacion, SolicitudDuplicada, SolicitudInexistente } from './dominio/errores';
 import { ESTADOS, Estado, esEstado } from './dominio/estado';
@@ -12,35 +11,12 @@ import { RegistroDeSolicitud, Solicitud } from './dominio/solicitud';
 import { TIPOS, TipoSolicitud } from './dominio/tipo-solicitud';
 
 // Gestor de solicitudes academicas.
-// Se encarga de todo: valida, calcula, guarda en archivo e imprime por consola.
-// OJO: funciona, no tocar mucho (version prototipo del primer cuatrimestre)
+// Se encarga de todo: valida, calcula e imprime por consola. Persistencia y reloj se inyectan.
 export class GestorSolicitudes {
-  solicitudes: Solicitud[] = [];
-  contador = 0;
-  ruta: string;
-  modoDebug = false; // TODO: usar para logs
-
-  constructor() {
-    this.ruta = process.env.SOLICITUDES_DB || './data/solicitudes.json';
-    try {
-      const raw = fs.readFileSync(this.ruta, 'utf8');
-      const d = JSON.parse(raw);
-      this.solicitudes = d.solicitudes.map((r: RegistroDeSolicitud) => Solicitud.desdeRegistro(r));
-      this.contador = d.contador;
-    } catch (e) {}
-  }
-
-  guardar() {
-    fs.mkdirSync(path.dirname(this.ruta), { recursive: true });
-    fs.writeFileSync(
-      this.ruta,
-      JSON.stringify(
-        { solicitudes: this.solicitudes.map((s) => s.aRegistro()), contador: this.contador },
-        null,
-        2,
-      ),
-    );
-  }
+  constructor(
+    private readonly repositorio: RepositorioDeSolicitudes,
+    private readonly reloj: Reloj,
+  ) {}
 
   registrarSolicitud(datos: DatosNuevaSolicitud): string {
     const nueva = validarDatosNuevaSolicitud(datos);
@@ -51,8 +27,7 @@ export class GestorSolicitudes {
       throw new SolicitudDuplicada(nueva.estudiante.legajo);
     }
 
-    this.contador++;
-    const id = 'SOL-' + String(this.contador).padStart(4, '0');
+    const id = 'SOL-' + String(this.repositorio.siguienteNumero()).padStart(4, '0');
     const hoy = this.hoy();
     const s = new Solicitud({
       id: id,
@@ -66,8 +41,7 @@ export class GestorSolicitudes {
       fechaLimite: this.calcularFechaLimite(reglas.plazoDias),
       historial: [{ fecha: hoy, de: null, a: Estado.PENDIENTE }],
     });
-    this.solicitudes.push(s);
-    this.guardar();
+    this.repositorio.guardar(s);
     console.log(
       'Solicitud ' +
         id +
@@ -84,54 +58,44 @@ export class GestorSolicitudes {
 
   /** Una solicitud está activa mientras esté PENDIENTE o EN_REVISION. */
   existeSolicitudActiva(legajo: string, tipo: TipoSolicitud): boolean {
-    for (let i = 0; i < this.solicitudes.length; i++) {
-      if (
-        this.solicitudes[i].estudiante.legajo == legajo &&
-        this.solicitudes[i].tipo == tipo &&
-        this.solicitudes[i].estaAbierta()
-      ) {
-        return true;
-      }
-    }
-    return false;
+    return this.repositorio
+      .todas()
+      .some((s) => s.estudiante.legajo === legajo && s.tipo === tipo && s.estaAbierta());
   }
 
-  buscarPorId(id: string): Solicitud | null {
-    for (let i = 0; i < this.solicitudes.length; i++) {
-      if (this.solicitudes[i].id == id) return this.solicitudes[i];
-    }
-    return null;
+  buscarPorId(id: string): Solicitud | undefined {
+    return this.repositorio.buscarPorId(id);
   }
 
   /** Fecha actual en formato AAAA-MM-DD. */
   hoy(): string {
-    return aFechaISO(new Date());
+    return aFechaISO(this.reloj.ahora());
   }
 
   calcularFechaLimite(plazoEnDias: number): string {
-    return aFechaISO(sumarDias(new Date(), plazoEnDias));
+    return aFechaISO(sumarDias(this.reloj.ahora(), plazoEnDias));
   }
 
   cambiarEstado(id: string, nuevo: string): void {
     const s = this.buscarPorId(id);
-    if (s == null) throw new SolicitudInexistente(id);
+    if (!s) throw new SolicitudInexistente(id);
     if (!esEstado(nuevo)) throw new ErrorDeValidacion('estado inválido: ' + nuevo);
     const cambio = s.cambiarEstado(nuevo, this.hoy());
-    this.guardar();
+    this.repositorio.guardar(s);
     console.log('Solicitud ' + id + ': ' + cambio.de + ' -> ' + cambio.a);
   }
 
   asignarResponsable(id: string, resp: string): void {
     const s = this.buscarPorId(id);
-    if (s == null) throw new SolicitudInexistente(id);
+    if (!s) throw new SolicitudInexistente(id);
     s.reasignar(resp);
-    this.guardar();
+    this.repositorio.guardar(s);
     console.log('Solicitud ' + id + ' asignada a ' + s.responsable);
   }
 
   buscar(criterios: CriteriosDeBusqueda): Solicitud[] {
     const filtro = FiltroSolicitudes.desde(criterios);
-    const r = this.solicitudes.filter((s) => filtro.coincide(s));
+    const r = this.repositorio.todas().filter((s) => filtro.coincide(s));
     for (let i = 0; i < r.length; i++) {
       const x = r[i];
       console.log(
@@ -154,7 +118,7 @@ export class GestorSolicitudes {
 
   mostrar(id: string): void {
     const s = this.buscarPorId(id);
-    if (s == null) throw new SolicitudInexistente(id);
+    if (!s) throw new SolicitudInexistente(id);
     console.log(s.id + ' | ' + s.tipo + ' | ' + s.prioridad + ' | ' + s.estado);
     console.log(
       'Estudiante: ' +
@@ -178,7 +142,7 @@ export class GestorSolicitudes {
   /** Imprime cuántas solicitudes hay en cada categoría (incluye las que tienen cero). */
   imprimirConteo<T extends string>(categorias: readonly T[], clasificar: (s: Solicitud) => T) {
     for (const categoria of categorias) {
-      const cantidad = this.solicitudes.filter((s) => clasificar(s) === categoria).length;
+      const cantidad = this.repositorio.todas().filter((s) => clasificar(s) === categoria).length;
       console.log('  ' + categoria + ': ' + cantidad);
     }
   }
@@ -186,7 +150,7 @@ export class GestorSolicitudes {
   generarReporte() {
     const hoy = this.hoy();
     console.log('=== REPORTE DE SOLICITUDES (' + hoy + ') ===');
-    console.log('Total: ' + this.solicitudes.length);
+    console.log('Total: ' + this.repositorio.todas().length);
 
     console.log('Por estado:');
     this.imprimirConteo(ESTADOS, (s) => s.estado);
@@ -198,8 +162,7 @@ export class GestorSolicitudes {
     // vencimientos de las solicitudes que siguen abiertas
     const venc: string[] = [];
     const prox: string[] = [];
-    for (let i = 0; i < this.solicitudes.length; i++) {
-      const s = this.solicitudes[i];
+    for (const s of this.repositorio.todas()) {
       if (s.estaVencida(hoy)) {
         venc.push(
           '  ' +

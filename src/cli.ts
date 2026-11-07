@@ -1,6 +1,8 @@
 import { pathToFileURL } from 'url';
 import { ErrorDeDominio } from './dominio/errores';
 import { GestorSolicitudes } from './gestor';
+import { RelojDelSistema } from './infraestructura/reloj-del-sistema';
+import { RepositorioJsonDeSolicitudes } from './infraestructura/repositorio-json';
 
 /**
  * Punto de entrada del CLI. Es el borde del sistema: acá (y solo acá) se traducen los errores
@@ -18,7 +20,12 @@ export function main(args: string[]): void {
 
 function ejecutarComando(args: string[]): void {
   const cmd = args[0];
-  const g = new GestorSolicitudes();
+  // Raíz de composición: acá se eligen las implementaciones concretas (único lugar que las conoce).
+  const rutaDeDatos = process.env.SOLICITUDES_DB || './data/solicitudes.json';
+  const g = new GestorSolicitudes(
+    new RepositorioJsonDeSolicitudes(rutaDeDatos),
+    new RelojDelSistema(),
+  );
 
   function o(n: string): string | undefined {
     const i = args.indexOf('--' + n);
