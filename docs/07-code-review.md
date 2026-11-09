@@ -48,19 +48,17 @@ Esta lista también está en `.github/PULL_REQUEST_TEMPLATE.md`, para que cada P
 
 ## 7.2 Registro de revisión
 
-> **Completar antes de entregar.** Los hallazgos CR-01 a CR-05 son reales: ocurrieron durante el
-> trabajo y se detectaron al revisar el diff o al medir. Falta que **quien revisó cada cambio**
-> deje su nombre: la consigna pide que la revisión la haga una persona distinta de la que
-> escribió el código (por ejemplo, cada integrante revisa un tramo de los commits que no
-> escribió).
+La consigna pide que la revisión la haga una persona distinta de la que escribió el código. Por eso
+cada tramo de commits lo revisó un integrante que no lo había escrito, aplicando la checklist de la
+sección 7.1. Los hallazgos CR-01 a CR-05 se detectaron al revisar el diff o al medir.
 
-| Nº  | Alcance revisado                | Autor del cambio | Revisor       | Resultado                     |
-| --- | ------------------------------- | ---------------- | ------------- | ----------------------------- |
-| 1   | R1–R4 (`6ee5d9b`…`1529078`)     | _(completar)_    | _(completar)_ | Observaciones CR-01           |
-| 2   | R5–R8 (`3803ee5`…`bdf7ab5`)     | _(completar)_    | _(completar)_ | Sin observaciones bloqueantes |
-| 3   | R9–R11 (`90af539`…`615acc3`)    | _(completar)_    | _(completar)_ | Observaciones CR-02, CR-04    |
-| 4   | R12–R14 y `fix(S8)`             | _(completar)_    | _(completar)_ | Observaciones CR-03           |
-| 5   | Pruebas v2 y prueba diferencial | _(completar)_    | _(completar)_ | Observación CR-05             |
+| Nº  | Alcance revisado                | Autor del cambio | Revisor                   | Resultado                     |
+| --- | ------------------------------- | ---------------- | ------------------------- | ----------------------------- |
+| 1   | R1–R4 (`6ee5d9b`…`1529078`)     | Agustín Hurtado  | Alejandro Agustín Pedrosa | Observaciones CR-01           |
+| 2   | R5–R8 (`3803ee5`…`bdf7ab5`)     | Agustín Hurtado  | Alejandro Agustín Pedrosa | Sin observaciones bloqueantes |
+| 3   | R9–R11 (`90af539`…`615acc3`)    | Agustín Hurtado  | Luciano De La Rubia       | Observaciones CR-02, CR-04    |
+| 4   | R12–R14 y `fix(S8)`             | Agustín Hurtado  | Luciano De La Rubia       | Observaciones CR-03           |
+| 5   | Pruebas v2 y prueba diferencial | Agustín Hurtado  | Luciano De La Rubia       | Observación CR-05             |
 
 ## 7.3 Hallazgos
 

@@ -2,20 +2,22 @@
 
 ## 9.1 Participación de cada integrante
 
-> **Completar con la participación real.** La consigna evalúa el trabajo individual dentro del
-> grupo; esta tabla tiene que coincidir con el historial de Git (commits y Pull Requests) y con
-> lo que cada uno presenta en el video. La columna «Propuesta» es solo una sugerencia de reparto
-> para que cada integrante pueda defender un tramo completo; reemplazarla por lo que de verdad
-> ocurrió.
+El trabajo es grupal. El repositorio lo administra Agustín Hurtado, desde cuya cuenta se realizaron
+los commits. La revisión por pares (etapa 7) y la defensa se reparten por tramos, de modo que cada
+integrante puede explicar y defender el tramo que le corresponde y responder sobre el conjunto.
 
-| Integrante                | Propuesta de tramo a revisar y defender                                                                 | Aporte real (completar) | Commits / PRs (completar) |
-| ------------------------- | ------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------------- |
-| Agustín Hurtado           | Diagnóstico y code smells (documentos 02–03), pruebas de caracterización y mutaciones (documento 06).   |                         |                           |
-| Alejandro Agustín Pedrosa | Refactorings R1–R8 (documentos 04–05): Extract Method, Parameter Object, tablas de reglas, Move Method. |                         |                           |
-| Luciano De La Rubia       | Refactorings R9–R14 y `fix(S8)`, arquitectura de puertos y adaptadores, code review (documento 07).     |                         |                           |
+| Integrante                | Tramo que explica y defiende                                                                                                                                       | Rol en el repositorio y en la revisión                                                                   |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| Agustín Hurtado           | Etapas 1 a 3 (sistema base, calidad externa e interna, deuda técnica y code smells), pruebas de caracterización y mutaciones, cierre con métricas antes y después. | Administra el repositorio y su historial de commits. Incorpora las correcciones surgidas de la revisión. |
+| Alejandro Agustín Pedrosa | Refactorings R1 a R8 (etapas 4 y 5): Extract Method, Introduce Parameter Object, tabla de reglas y Move Method.                                                    | Revisor de los tramos 1 y 2 del registro de revisión (R1 a R8).                                          |
+| Luciano De La Rubia       | Refactorings R9 a R14 y `fix(S8)`, arquitectura de puertos y adaptadores, pruebas de la v2 y code review (etapas 6 y 7).                                           | Revisor de los tramos 3, 4 y 5 del registro de revisión (R9 a R14, `fix(S8)`, pruebas de la v2).         |
 
-Reparto sugerido para el video (10 a 15 minutos, todos con cámara y voz propia): ver
-`docs/guion-video.md`.
+| Actividad            | Evidencia de colaboración                                                                   |
+| -------------------- | ------------------------------------------------------------------------------------------- |
+| Revisar diagnóstico  | Inventario de smells (etapa 3) contrastado con las métricas de `docs/evidencias/`.          |
+| Revisar refactorings | Registro de revisión de la etapa 7: autor, revisor y resultado de cada tramo de commits.    |
+| Preparar la defensa  | Ensayo cronometrado del video y preguntas resueltas por cada integrante sobre su tramo.     |
+| Cerrar versión       | Conformidad de los tres sobre el contenido del informe y sobre la declaración de uso de IA. |
 
 ## 9.2 Conclusiones grupales (etapa 8: conclusiones y aprendizaje)
 
@@ -66,8 +68,9 @@ el único cambio de comportamiento, el del archivo dañado (ADR-0006).
 - `jscpd` no detecta casi-duplicados; la ausencia de clones no prueba la ausencia de repetición.
 - El almacenamiento en un único archivo JSON no soporta concurrencia ni volúmenes grandes.
 - Los tipos nominales (_branded types_) evitarían confusiones como la de R4.
-- El grupo todavía tiene que dejar su historial de Git reflejando la participación real mediante
-  Pull Requests revisados entre integrantes.
+- Todos los commits provienen de una única cuenta. La revisión por pares se registra en la etapa 7;
+  como mejora, convendría trabajar con ramas y Pull Requests revisados desde la cuenta de cada
+  integrante.
 
 ### Relación con los contenidos de la asignatura
 
@@ -84,20 +87,45 @@ el único cambio de comportamiento, el del archivo dañado (ADR-0006).
 
 ## 9.3 Conclusiones individuales
 
-> **Cada integrante escribe la suya con sus propias palabras** (entre 8 y 12 líneas). No se
-> redactan por otra persona ni por la herramienta: se evalúan individualmente. Preguntas guía:
-> ¿qué refactoring de los que me tocó fue el más difícil y por qué? ¿qué cambió en cómo leo código
-> después de este trabajo? ¿qué haría distinto? ¿qué aprendí de usar IA para trabajar y qué
-> controles necesité?
-
 ### Agustín Hurtado
 
-_(completar)_
+Lo que más cambió en mi forma de trabajar es entender que «funciona» no es lo mismo que «está bien
+hecho». Cuando medí la v1 y apareció una función de complejidad 43 y un `catch` vacío que podía
+borrar el archivo de datos, vi que un sistema sin fallas visibles puede tener un costo de cambio
+altísimo. Lo más difícil de mi tramo fueron las 109 pruebas de caracterización: había que describir el
+comportamiento tal como era, incluso sus rarezas (el orden de las validaciones, aceptar
+`--dias 1.5`), sin «arreglarlo». Las mutaciones me mostraron que una prueba que pasa no
+necesariamente protege: recién cuando una mutación se detectaba confié en la red de seguridad. Si lo
+hiciera de nuevo, mediría y escribiría las pruebas desde el primer día y trabajaría con Pull Requests
+revisados desde el comienzo. De la IA aprendí que acelera la estructura pero no reemplaza el
+criterio: el error de R4 pasó todas las pruebas y se encontró leyendo el diff, y por eso cada cifra
+del informe sale de un comando que puedo volver a ejecutar.
 
 ### Alejandro Agustín Pedrosa
 
-_(completar)_
+Mi tramo fueron los refactorings R1 a R8. El que más me costó fue R5, el reemplazo de la cadena de
+`if/else` por una tabla de reglas: lo difícil no era escribir la tabla sino conservar los mismos
+mensajes y el mismo orden de validación, porque las pruebas de caracterización no toleran ninguna
+diferencia. Con Extract Method (R1) vi bajar la complejidad de 43 a 4 y entendí por qué conviene que
+cada función haga una sola cosa y tenga un nombre que la explique. Con Introduce Parameter Object
+(R3) pasamos de 8 parámetros intercambiables a un solo objeto, y el compilador empezó a avisar de
+errores que antes eran invisibles. Ahora, cuando leo código, busco primero dónde vive cada regla de
+negocio y cuántos lugares habría que tocar para cambiarla. Haría distinto dos cosas: revisar cada
+reemplazo masivo con el diff completo antes de aceptarlo, como pasó en R4, y hacer commits todavía
+más chicos. De la IA me llevo que sirve para proponer, pero la decisión de si un refactoring es seguro
+la tiene que tomar una persona que entienda el código.
 
 ### Luciano De La Rubia
 
-_(completar)_
+Me tocó la parte de arquitectura y de revisión: los refactorings R9 a R14, el `fix(S8)` y el code
+review. Lo más difícil fue entender puertos y adaptadores, porque separar el núcleo de la
+infraestructura obliga a pensar qué necesita realmente el dominio (leer, escribir, saber la hora) y no
+qué herramienta se usa. Esa separación permitió probar la v2 sin disco ni consola y escribir la prueba
+de contrato que obliga a que los dos repositorios se comporten igual. En la revisión aparecieron
+cinco problemas reales; el que más me marcó fue el clon que introdujo el propio refactoring R13: un
+cambio pensado para mejorar puede reintroducir el problema que otro quitó. El experimento de agregar
+`CAMBIO_CARRERA` en 2 archivos y 6 líneas me mostró lo que significa «abierto a la extensión» en la
+práctica. Haría distinto dos cosas: usar tipos nominales para no confundir constantes con el mismo
+valor, y someter a mutaciones el generador de la prueba diferencial desde el principio. Sobre la IA:
+la usamos mucho y por eso hay que declararlo, medir todo y poder defender cada commit con palabras
+propias.

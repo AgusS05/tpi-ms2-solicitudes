@@ -6,7 +6,6 @@ Sistema de línea de comandos para registrar y gestionar solicitudes de estudian
 > **Trabajo Práctico Integrador — Metodología de Sistemas II**
 > UTN · Tecnicatura Universitaria en Programación
 > Integrantes: Agustín Hurtado · Alejandro Agustín Pedrosa · Luciano De La Rubia
-> Comisión: _(completar)_ · Docente: _(completar)_
 
 El repositorio cuenta la historia de un **refactoring seguro**: se parte de una versión inicial que
 funciona pero tiene deuda técnica real (`estado-inicial`), se la diagnostica con métricas, se
@@ -115,23 +114,23 @@ Para comparar: `git diff estado-inicial estado-refactorizado --stat`.
 
 ## Documentación
 
-| #   | Documento                                                                                                         |
-| --- | ----------------------------------------------------------------------------------------------------------------- |
-| 1   | [Sistema base](docs/01-sistema-base.md)                                                                           |
-| 2   | [Calidad externa vs. interna](docs/02-calidad-externa-vs-interna.md)                                              |
-| 3   | [Deuda técnica y code smells](docs/03-deuda-tecnica-y-code-smells.md)                                             |
-| 4   | [SOLID y Clean Code](docs/04-solid-y-clean-code.md)                                                               |
-| 5   | [Refactoring y trazabilidad](docs/05-refactoring-y-trazabilidad.md)                                               |
-| 6   | [Pruebas y verificación](docs/06-pruebas-y-verificacion.md)                                                       |
-| 7   | [Code review (checklist y registro)](docs/07-code-review.md)                                                      |
-| 8   | [Uso de IA y registro de prompts](docs/08-uso-de-ia.md)                                                           |
-| 9   | [Participación y conclusiones](docs/09-participacion-y-conclusiones.md)                                           |
-| —   | [Decisiones técnicas (ADRs)](docs/adr/) · [Evidencias](docs/evidencias/) · [Guion del video](docs/guion-video.md) |
+| #   | Documento                                                                |
+| --- | ------------------------------------------------------------------------ |
+| 1   | [Sistema base](docs/01-sistema-base.md)                                  |
+| 2   | [Calidad externa vs. interna](docs/02-calidad-externa-vs-interna.md)     |
+| 3   | [Deuda técnica y code smells](docs/03-deuda-tecnica-y-code-smells.md)    |
+| 4   | [SOLID y Clean Code](docs/04-solid-y-clean-code.md)                      |
+| 5   | [Refactoring y trazabilidad](docs/05-refactoring-y-trazabilidad.md)      |
+| 6   | [Pruebas y verificación](docs/06-pruebas-y-verificacion.md)              |
+| 7   | [Code review (checklist y registro)](docs/07-code-review.md)             |
+| 8   | [Uso de IA y registro de prompts](docs/08-uso-de-ia.md)                  |
+| 9   | [Participación y conclusiones](docs/09-participacion-y-conclusiones.md)  |
+| —   | [Decisiones técnicas (ADRs)](docs/adr/) · [Evidencias](docs/evidencias/) |
 
 ## Entregables del TPI
 
 - Informe en PDF único: se entrega por separado (portada, resumen, 8 etapas, evidencias, prompts de IA, conclusiones)
-- Video de defensa: _(completar con el enlace)_
-- Repositorio: _(completar con la URL)_
+- Video de defensa: se carga en la plataforma institucional junto con el PDF y se enlaza en el informe
+- Repositorio: este repositorio, con los tags `estado-inicial` y `estado-refactorizado`
 
 Todos los datos de ejemplo son **sintéticos**. Ver `CONTRIBUTING.md` para el flujo de trabajo.
